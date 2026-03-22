@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Mapping — Monitoramento de Maquinas Agricolas e de Construcao</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-primary:#0f1318;
+  --bg-secondary:#151a21;
+  --bg-card:#1a2028;
+  --bg-card-hover:#1e2530;
+  --bg-sidebar:#111820;
+  --border-color:#2a3340;
+  --border-subtle:#222a35;
+  --text-primary:#d4dae3;
+  --text-secondary:#8a95a5;
+  --text-muted:#5a6575;
+  --accent-green:#4caf50;
+  --accent-green-dim:#367d39;
+  --accent-yellow:#d4a017;
+  --accent-yellow-dim:#a07a12;
+  --accent-orange:#e67e22;
+  --accent-red:#e74c3c;
+  --accent-blue:#3498db;
+  --accent-cyan:#00bcd4;
+  --method-get:#4caf50;
+  --method-post:#e67e22;
+  --method-put:#3498db;
+  --method-delete:#e74c3c;
+  --sidebar-w:280px;
+  --header-h:0px;
+  --font-mono:'JetBrains Mono',monospace;
+  --font-sans:'IBM Plex Sans',sans-serif;
+}
+html{scroll-behavior:smooth;font-size:15px}
+body{
+  font-family:var(--font-sans);
+  background:var(--bg-primary);
+  color:var(--text-primary);
+  line-height:1.6;
+  display:flex;
+  min-height:100vh;
+}
+/* SIDEBAR */
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;
+  width:var(--sidebar-w);
+  background:var(--bg-sidebar);
+  border-right:1px solid var(--border-color);
+  overflow-y:auto;
+  z-index:100;
+  padding:24px 0;
+  scrollbar-width:thin;
+  scrollbar-color:var(--border-color) transparent;
+}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-track{background:transparent}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:2px}
+.sidebar-section{padding:0 20px;margin-bottom:28px}
+.sidebar-label{
+  font-size:.7rem;
+  font-weight:600;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--accent-yellow);
+  margin-bottom:12px;
+  display:flex;align-items:center;gap:6px;
+}
+.sidebar-label::before{
+  content:'';display:block;width:12px;height:1px;
+  background:var(--accent-yellow);
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 14px;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:.85rem;
+  color:var(--text-secondary);
+  text-decoration:none;
+  transition:all .15s;
+  margin-bottom:2px;
+  border:1px solid transparent;
+}
+.nav-item:hover{
+  background:rgba(212,160,23,.06);
+  color:var(--text-primary);
+}
+.nav-item.active{
+  background:rgba(212,160,23,.12);
+  border-color:var(--accent-yellow-dim);
+  color:var(--accent-yellow);
+}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.nav-item.active svg{opacity:1}
+.sidebar-version{
+  padding:16px 20px;
+  margin-bottom:16px;
+  border-bottom:1px solid var(--border-subtle);
+}
+.sidebar-version .logo{
+  font-family:var(--font-mono);
+  font-size:1.1rem;
+  font-weight:700;
+  color:var(--accent-green);
+  letter-spacing:-.02em;
+}
+.sidebar-version .version-tag{
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:.65rem;
+  background:rgba(76,175,80,.15);
+  color:var(--accent-green);
+  padding:2px 8px;
+  border-radius:3px;
+  margin-left:8px;
+  vertical-align:middle;
+}
+.sidebar-version .subtitle{
+  font-size:.72rem;
+  color:var(--text-muted);
+  margin-top:4px;
+}
+/* MAIN */
+.main-content{
+  margin-left:var(--sidebar-w);
+  flex:1;
+  min-width:0;
+}
+/* HERO */
+.hero{
+  position:relative;
+  padding:56px 48px 48px;
+  background:linear-gradient(135deg,#0d1117 0%,#1a2332 40%,#1f2a18 70%,#0d1117 100%);
+  border-bottom:1px solid var(--border-color);
+  overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 600px 300px at 80% 30%,rgba(212,160,23,.08),transparent),
+    radial-gradient(ellipse 400px 400px at 20% 80%,rgba(76,175,80,.05),transparent);
+  pointer-events:none;
+}
+.hero::after{
+  content:'';position:absolute;top:0;right:0;bottom:0;width:40%;
+  background:linear-gradient(90deg,transparent,rgba(212,160,23,.03));
+  pointer-events:none;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);
+  font-size:.7rem;
+  color:var(--accent-green);
+  background:rgba(76,175,80,.1);
+  border:1px solid rgba(76,175,80,.2);
+  padding:4px 12px;
+  border-radius:4px;
+  margin-bottom:20px;
+}
+.hero h1{
+  font-family:var(--font-mono);
+  font-size:2.6rem;
+  font-weight:700;
+  color:var(--accent-green);
+  letter-spacing:-.03em;
+  margin-bottom:8px;
+  position:relative;
+}
+.hero h2{
+  font-size:1.3rem;
+  font-weight:500;
+  color:var(--text-primary);
+  margin-bottom:16px;
+  position:relative;
+}
+.hero-desc{
+  font-size:.9rem;
+  color:var(--text-secondary);
+  max-width:680px;
+  line-height:1.7;
+  position:relative;
+}
+.hero-desc strong.jd{color:var(--accent-green)}
+.hero-desc strong.hi{color:var(--accent-orange)}
+.hero-stats{
+  display:flex;gap:0;margin-top:32px;position:relative;
+  border:1px solid var(--border-color);
+  border-radius:8px;
+  overflow:hidden;
+  max-width:640px;
+  background:rgba(15,19,24,.6);
+  backdrop-filter:blur(8px);
+}
+.stat-item{
+  flex:1;padding:16px 20px;text-align:center;
+  border-right:1px solid var(--border-color);
+}
+.stat-item:last-child{border-right:none}
+.stat-value{
+  font-family:var(--font-mono);
+  font-size:1.5rem;
+  font-weight:700;
+  line-height:1.2;
+}
+.stat-value.green{color:var(--accent-green)}
+.stat-value.yellow{color:var(--accent-yellow)}
+.stat-value.white{color:var(--text-primary)}
+.stat-value.red{color:var(--accent-orange)}
+.stat-label{
+  font-size:.7rem;
+  color:var(--text-muted);
+  margin-top:4px;
+  letter-spacing:.02em;
+}
+/* CONTENT AREA */
+.content-area{padding:0 48px 80px}
+/* SECTION */
+.api-section{
+  padding-top:48px;
+  margin-bottom:8px;
+}
+.section-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:24px;
+  padding-bottom:20px;
+  border-bottom:1px solid var(--border-color);
+}
+.section-tag{
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:.65rem;
+  font-weight:500;
+  letter-spacing:.05em;
+  padding:3px 10px;
+  border:1px solid var(--border-color);
+  border-radius:3px;
+  color:var(--text-secondary);
+  margin-bottom:10px;
+}
+.section-title{
+  font-size:1.4rem;
+  font-weight:700;
+  color:var(--text-primary);
+  margin-bottom:4px;
+}
+.section-subtitle{
+  font-size:.85rem;
+  color:var(--text-muted);
+}
+.section-count{
+  font-family:var(--font-mono);
+  font-size:.8rem;
+  color:var(--text-muted);
+  white-space:nowrap;
+  margin-top:8px;
+}
+/* META ROW */
+.meta-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  background:var(--bg-card);
+  border:1px solid var(--border-color);
+  border-radius:8px;
+  margin-bottom:24px;
+  overflow:hidden;
+}
+.meta-item{
+  padding:14px 20px;
+  border-right:1px solid var(--border-color);
+}
+.meta-item:last-child{border-right:none}
+.meta-item:nth-child(n+3){border-top:1px solid var(--border-color)}
+.meta-label{
+  font-size:.7rem;
+  color:var(--text-muted);
+  margin-bottom:4px;
+  display:flex;align-items:center;gap:6px;
+}
+.meta-label svg{width:13px;height:13px;opacity:.5}
+.meta-value{
+  font-family:var(--font-mono);
+  font-size:.8rem;
+  color:var(--accent-cyan);
+}
+.meta-value.text{
+  font-family:var(--font-sans);
+  color:var(--text-primary);
+}
+/* ENDPOINT CARD */
+.endpoint-card{
+  background:var(--bg-card);
+  border:1px solid var(--border-color);
+  border-left:3px solid var(--method-get);
+  border-radius:0 8px 8px 0;
+  padding:18px 22px;
+  margin-bottom:10px;
+  transition:background .15s,border-color .15s;
+  cursor:default;
+}
+.endpoint-card:hover{
+  background:var(--bg-card-hover);
+  border-color:#3a4555;
+  border-left-color:inherit;
+}
+.endpoint-card.post{border-left-color:var(--method-post)}
+.endpoint-card.put{border-left-color:var(--method-put)}
+.endpoint-card.delete{border-left-color:var(--method-delete)}
+.endpoint-top{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:8px;
+  flex-wrap:wrap;
+}
+.method-badge{
+  font-family:var(--font-mono);
+  font-size:.65rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  padding:3px 10px;
+  border-radius:4px;
+  color:#fff;
+  flex-shrink:0;
+}
+.method-badge.get{background:rgba(76,175,80,.2);color:var(--method-get);border:1px solid rgba(76,175,80,.3)}
+.method-badge.post{background:rgba(230,126,34,.2);color:var(--method-post);border:1px solid rgba(230,126,34,.3)}
+.method-badge.put{background:rgba(52,152,219,.2);color:var(--method-put);border:1px solid rgba(52,152,219,.3)}
+.endpoint-path{
+  font-family:var(--font-mono);
+  font-size:.82rem;
+  color:var(--accent-yellow);
+  word-break:break-all;
+}
+.endpoint-copy{
+  background:none;border:none;cursor:pointer;
+  color:var(--text-muted);padding:2px;
+  opacity:0;transition:opacity .15s;
+}
+.endpoint-card:hover .endpoint-copy{opacity:1}
+.endpoint-copy:hover{color:var(--text-primary)}
+.endpoint-copy svg{width:14px;height:14px}
+.endpoint-name{
+  font-size:.95rem;
+  font-weight:600;
+  color:var(--text-primary);
+  margin-bottom:4px;
+}
+.endpoint-desc{
+  font-size:.82rem;
+  color:var(--text-secondary);
+  line-height:1.6;
+}
+.endpoint-tags{
+  display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;
+}
+.etag{
+  font-size:.65rem;
+  font-family:var(--font-mono);
+  padding:2px 8px;
+  border-radius:3px;
+  background:rgba(52,152,219,.1);
+  color:var(--accent-blue);
+  border:1px solid rgba(52,152,219,.15);
+}
+.etag.loc{background:rgba(76,175,80,.1);color:var(--accent-green);border-color:rgba(76,175,80,.15)}
+.etag.hrs{background:rgba(212,160,23,.1);color:var(--accent-yellow);border-color:rgba(212,160,23,.15)}
+.etag.fuel{background:rgba(230,126,34,.1);color:var(--accent-orange);border-color:rgba(230,126,34,.15)}
+.etag.alert{background:rgba(231,76,60,.1);color:var(--accent-red);border-color:rgba(231,76,60,.15)}
+.etag.status{background:rgba(0,188,212,.1);color:var(--accent-cyan);border-color:rgba(0,188,212,.15)}
+/* NOTES */
+.note-box{
+  background:rgba(212,160,23,.05);
+  border:1px solid rgba(212,160,23,.15);
+  border-radius:8px;
+  padding:16px 20px;
+  margin:20px 0;
+  font-size:.82rem;
+  color:var(--text-secondary);
+  line-height:1.7;
+}
+.note-box .note-title{
+  font-weight:600;
+  color:var(--accent-yellow);
+  margin-bottom:6px;
+  display:flex;align-items:center;gap:8px;
+  font-size:.78rem;
+}
+.note-box .note-title svg{width:15px;height:15px}
+/* COVERAGE TABLE */
+.coverage-section{padding-top:48px}
+.coverage-grid{
+  display:grid;grid-template-columns:1fr;gap:0;
+  border:1px solid var(--border-color);
+  border-radius:8px;
+  overflow:hidden;
+  margin-bottom:24px;
+}
+.coverage-row{
+  display:grid;
+  grid-template-columns:1fr 120px 120px;
+  border-bottom:1px solid var(--border-subtle);
+}
+.coverage-row:last-child{border-bottom:none}
+.coverage-row.header{
+  background:var(--bg-card);
+}
+.coverage-row.header .cov-cell{
+  font-weight:600;
+  color:var(--text-primary);
+  font-size:.75rem;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.cov-cell{
+  padding:12px 16px;
+  font-size:.82rem;
+  color:var(--text-secondary);
+  display:flex;align-items:center;gap:8px;
+}
+.cov-cell:not(:first-child){
+  text-align:center;
+  justify-content:center;
+  border-left:1px solid var(--border-subtle);
+}
+.cov-bar{
+  width:48px;height:6px;
+  background:var(--border-color);
+  border-radius:3px;
+  overflow:hidden;
+  flex-shrink:0;
+}
+.cov-bar-fill{height:100%;border-radius:3px}
+.cov-bar-fill.high{background:var(--accent-green)}
+.cov-bar-fill.mid{background:var(--accent-yellow)}
+.cov-bar-fill.low{background:var(--accent-orange)}
+.cov-pct{
+  font-family:var(--font-mono);
+  font-size:.75rem;
+  min-width:36px;
+}
+/* TECH COMPARISON */
+.tech-table{
+  border:1px solid var(--border-color);
+  border-radius:8px;
+  overflow:hidden;
+  margin-bottom:24px;
+}
+.tech-row{
+  display:grid;
+  grid-template-columns:180px 1fr 1fr;
+  border-bottom:1px solid var(--border-subtle);
+}
+.tech-row:last-child{border-bottom:none}
+.tech-row.header{background:var(--bg-card)}
+.tech-cell{
+  padding:11px 16px;
+  font-size:.82rem;
+  color:var(--text-secondary);
+}
+.tech-cell:not(:first-child){
+  border-left:1px solid var(--border-subtle);
+}
+.tech-row.header .tech-cell{
+  font-weight:600;
+  color:var(--text-primary);
+  font-size:.75rem;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.tech-cell .val{color:var(--text-primary)}
+.tech-cell .mono{font-family:var(--font-mono);font-size:.78rem;color:var(--accent-cyan)}
+.tech-cell .yes{color:var(--accent-green)}
+.tech-cell .no{color:var(--accent-red)}
+.tech-cell .partial{color:var(--accent-yellow)}
+/* USE CASES */
+.usecase-card{
+  background:var(--bg-card);
+  border:1px solid var(--border-color);
+  border-radius:8px;
+  padding:20px 24px;
+  margin-bottom:12px;
+}
+.usecase-card h4{
+  font-size:.95rem;
+  font-weight:600;
+  color:var(--text-primary);
+  margin-bottom:8px;
+}
+.usecase-card p{
+  font-size:.82rem;
+  color:var(--text-secondary);
+  line-height:1.65;
+  margin-bottom:10px;
+}
+.usecase-endpoints{
+  display:flex;gap:8px;flex-wrap:wrap;
+}
+.ue-tag{
+  font-family:var(--font-mono);
+  font-size:.68rem;
+  padding:3px 10px;
+  border-radius:4px;
+  background:rgba(76,175,80,.08);
+  color:var(--accent-green);
+  border:1px solid rgba(76,175,80,.15);
+}
+.ue-tag.hi{
+  background:rgba(230,126,34,.08);
+  color:var(--accent-orange);
+  border-color:rgba(230,126,34,.15);
+}
+/* REFERENCES */
+.ref-list{margin-top:16px}
+.ref-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:10px 0;
+  border-bottom:1px solid var(--border-subtle);
+  font-size:.82rem;
+}
+.ref-item:last-child{border-bottom:none}
+.ref-num{
+  font-family:var(--font-mono);
+  font-size:.7rem;
+  font-weight:600;
+  color:var(--text-muted);
+  min-width:22px;
+  text-align:right;
+  flex-shrink:0;
+  margin-top:2px;
+}
+.ref-text{color:var(--text-secondary)}
+/* FOOTER */
+.footer{
+  padding:32px 48px;
+  border-top:1px solid var(--border-color);
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.footer-tag{
+  font-family:var(--font-mono);
+  font-size:.68rem;
+  padding:4px 12px;
+  border-radius:4px;
+  background:rgba(76,175,80,.08);
+  color:var(--accent-green);
+  border:1px solid rgba(76,175,80,.12);
+}
+.footer-text{
+  font-size:.75rem;
+  color:var(--text-muted);
+}
+/* SCROLLBAR */
+.main-content{
+  scrollbar-width:thin;
+  scrollbar-color:var(--border-color) transparent;
+}
+/* MOBILE */
+@media(max-width:900px){
+  .sidebar{display:none}
+  .main-content{margin-left:0}
+  .hero{padding:32px 24px}
+  .content-area{padding:0 24px 60px}
+  .hero-stats{flex-wrap:wrap}
+  .stat-item{min-width:120px}
+  .meta-row{grid-template-columns:1fr}
+  .meta-item{border-right:none !important}
+  .meta-item:nth-child(n+2){border-top:1px solid var(--border-color)}
+  .coverage-row{grid-template-columns:1fr 90px 90px}
+  .tech-row{grid-template-columns:120px 1fr 1fr}
+  .footer{padding:24px}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-version">
+    <span class="logo">API Mapping</span><span class="version-tag">v2025.03</span>
+    <div class="subtitle">Baseado em documentacao oficial</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Navegacao</div>
+    <a href="#jd-ops" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      JD Operations Center
+    </a>
+    <a href="#jd-aemp" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      JD — ISO 15143-3
+    </a>
+    <a href="#hitachi" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      Hitachi Telematics
+    </a>
+    <a href="#coverage" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+      Cobertura de Dados
+    </a>
+    <a href="#usecases" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Casos de Uso
+    </a>
+    <a href="#refs" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      Referencias
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Filtrar por Dado</div>
+    <a href="#" class="nav-item active" data-filter="all">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+      Todos
+    </a>
+    <a href="#" class="nav-item" data-filter="loc">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Localizacao
+    </a>
+    <a href="#" class="nav-item" data-filter="hrs">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Horas
+    </a>
+    <a href="#" class="nav-item" data-filter="fuel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22h12M5 22V8l-2-2V4h2l2 2h4l2-2h2v2l-2 2v14"/><path d="M17 10h2a2 2 0 012 2v4a2 2 0 01-2 2h-2"/></svg>
+      Combustivel
+    </a>
+    <a href="#" class="nav-item" data-filter="alert">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Alertas
+    </a>
+    <a href="#" class="nav-item" data-filter="status">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Status
+    </a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-content">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      v2025.03 — Baseado em documentacao oficial
+    </div>
+    <h1>API Mapping</h1>
+    <h2>Monitoramento de Maquinas Agricolas e de Construcao</h2>
+    <p class="hero-desc">
+      Mapeamento tecnico das APIs da <strong class="jd">John Deere / Wirtgen Group</strong> e
+      <strong class="hi">Hitachi Construction Machinery</strong> para desenvolvimento de aplicativo
+      de monitoramento de frota. Todos os dados sao baseados exclusivamente na documentacao oficial das fabricantes.
+    </p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-value green">21</div>
+        <div class="stat-label">Endpoints Mapeados</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value yellow">2</div>
+        <div class="stat-label">Fabricantes</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value white">ISO</div>
+        <div class="stat-label">15143-3 / AEMP 2.0</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value red">10min</div>
+        <div class="stat-label">Freq. Minima (Hitachi)</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="content-area">
+
+    <!-- ========================================= -->
+    <!-- JD OPERATIONS CENTER                      -->
+    <!-- ========================================= -->
+    <section class="api-section" id="jd-ops">
+      <div class="section-header">
+        <div>
+          <div class="section-tag">Proprietario + ISO 15143-3</div>
+          <h3 class="section-title">John Deere Operations Center API</h3>
+          <div class="section-subtitle">Precision Tech APIs — Gestao de Equipamentos e Frota</div>
+        </div>
+        <div class="section-count">11 endpoints</div>
+      </div>
+
+      <div class="meta-row">
+        <div class="meta-item">
+          <div class="meta-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+            Base URL (Sandbox)
+          </div>
+          <div class="meta-value">https://sandboxapi.deere.com/platform/</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Autenticacao
+          </div>
+          <div class="meta-value text">OAuth 2.0 (Authorization Code Flow) — Scopes: ag1, ag2, ag3</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+            Base URL (Producao)
+          </div>
+          <div class="meta-value">https://partnerapi.deere.com/platform/</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>
+            Portal
+          </div>
+          <div class="meta-value">https://developer.deere.com</div>
+        </div>
+      </div>
+
+      <div class="note-box">
+        <div class="note-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Pre-requisito: Organizations
+        </div>
+        O endpoint GET /organizations e obrigatorio como ponto de partida. Sem listar as organizacoes do usuario autenticado, nao e possivel chamar nenhum endpoint que depende de {orgId}. A conexao entre a aplicacao e a organizacao do usuario e feita via https://connections.deere.com.
+      </div>
+
+      <!-- GET /organizations -->
+      <div class="endpoint-card" data-tags="status">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/organizations</span>
+        </div>
+        <div class="endpoint-name">Listar Organizacoes</div>
+        <div class="endpoint-desc">Retorna as organizacoes vinculadas ao usuario autenticado. Ponto de partida obrigatorio para todos os demais endpoints. Inclui links para recursos de cada organizacao (machines, fields, assets, etc).</div>
+        <div class="endpoint-tags"><span class="etag status">status</span></div>
+      </div>
+
+      <!-- GET /equipment -->
+      <div class="endpoint-card" data-tags="status">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/equipment</span>
+        </div>
+        <div class="endpoint-name">Listar Equipamentos</div>
+        <div class="endpoint-desc">Retorna a lista de equipamentos (maquinas e implementos) associados a uma organizacao. Suporta filtros por categoria, conectividade e IDs de organizacao. Substitui as antigas APIs separadas de Machines e Implements (depreciadas em Jan/2025).</div>
+        <div class="endpoint-tags"><span class="etag status">status</span></div>
+      </div>
+
+      <!-- GET /equipment/{id} -->
+      <div class="endpoint-card" data-tags="status">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/equipment/{id}</span>
+        </div>
+        <div class="endpoint-name">Detalhes do Equipamento</div>
+        <div class="endpoint-desc">Retorna informacoes detalhadas de uma maquina especifica, incluindo especificacoes tecnicas, estado atual de conectividade e dispositivos pareados.</div>
+        <div class="endpoint-tags"><span class="etag status">status</span></div>
+      </div>
+
+      <!-- GET machineLocations -->
+      <div class="endpoint-card" data-tags="loc">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/organizations/{orgId}/machineLocations</span>
+        </div>
+        <div class="endpoint-name">Localizacoes de Maquinas</div>
+        <div class="endpoint-desc">Fornece o historico de localizacao GPS das maquinas de uma organizacao. Permite rastreamento em tempo real e analise de rotas percorridas.</div>
+        <div class="endpoint-tags"><span class="etag loc">localizacao</span></div>
+      </div>
+
+      <!-- GET machineAlerts -->
+      <div class="endpoint-card" data-tags="alert">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/organizations/{orgId}/machineAlerts</span>
+        </div>
+        <div class="endpoint-name">Alertas de Maquinas (DTC)</div>
+        <div class="endpoint-desc">Retorna alertas e codigos de falha (Diagnostic Trouble Codes) gerados pelas maquinas. Inclui severidade, descricao e timestamp. Tipos de alerta: machine, geofence e maintenance.</div>
+        <div class="endpoint-tags"><span class="etag alert">alertas</span></div>
+      </div>
+
+      <!-- GET machineEngineHours -->
+      <div class="endpoint-card" data-tags="hrs">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/organizations/{orgId}/machineEngineHours</span>
+        </div>
+        <div class="endpoint-name">Horas de Motor (Cumulativas)</div>
+        <div class="endpoint-desc">Retorna as horas cumulativas de operacao do motor de cada maquina. Dado fundamental para controle de depreciacao e agendamento de manutencao.</div>
+        <div class="endpoint-tags"><span class="etag hrs">horas</span></div>
+      </div>
+
+      <!-- GET machineHoursOfOperation -->
+      <div class="endpoint-card" data-tags="hrs">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/organizations/{orgId}/machineHoursOfOperation</span>
+        </div>
+        <div class="endpoint-name">Horas de Operacao (Ligado/Desligado)</div>
+        <div class="endpoint-desc">Fornece as duracoes em que o motor esteve ligado ou desligado em um periodo especifico. Difere de Engine Hours por oferecer intervalos temporais detalhados em vez de apenas o valor cumulativo.</div>
+        <div class="endpoint-tags"><span class="etag hrs">horas</span></div>
+      </div>
+
+      <!-- GET machineDistanceTraveled -->
+      <div class="endpoint-card" data-tags="loc">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/organizations/{orgId}/machineDistanceTraveled</span>
+        </div>
+        <div class="endpoint-name">Distancia Percorrida</div>
+        <div class="endpoint-desc">Retorna a distancia total percorrida por cada maquina. Util para controle de quilometragem, logistica e calculo de desgaste mecanico.</div>
+        <div class="endpoint-tags"><span class="etag loc">localizacao</span></div>
+      </div>
+
+      <!-- GET machineDeviceStateReports -->
+      <div class="endpoint-card" data-tags="status fuel">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/organizations/{orgId}/machineDeviceStateReports</span>
+        </div>
+        <div class="endpoint-name">Estado do Dispositivo</div>
+        <div class="endpoint-desc">Fornece o estado atual do dispositivo telematico instalado na maquina, incluindo nivel de combustivel, estado do motor e status de conectividade.</div>
+        <div class="endpoint-tags"><span class="etag status">status</span><span class="etag fuel">combustivel</span></div>
+      </div>
+
+      <!-- GET assets -->
+      <div class="endpoint-card" data-tags="status loc">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/organizations/{orgId}/assets</span>
+        </div>
+        <div class="endpoint-name">Assets (Ativos Rastreados)</div>
+        <div class="endpoint-desc">Gerencia ativos rastreados que nao sao necessariamente maquinas John Deere, permitindo integracao de equipamentos de terceiros na plataforma.</div>
+        <div class="endpoint-tags"><span class="etag status">status</span><span class="etag loc">localizacao</span></div>
+      </div>
+
+      <!-- POST webhooks -->
+      <div class="endpoint-card post" data-tags="alert status">
+        <div class="endpoint-top">
+          <span class="method-badge post">POST</span>
+          <span class="endpoint-path">/webhooks</span>
+        </div>
+        <div class="endpoint-name">Webhooks — Notificacoes em Tempo Real</div>
+        <div class="endpoint-desc">Configura webhooks para receber notificacoes em tempo real quando eventos ocorrem (alertas, mudancas de estado, novas localizacoes). A JD tambem oferece Data Subscription Service para eventos mais granulares (flags, map layers, etc).</div>
+        <div class="endpoint-tags"><span class="etag alert">alertas</span><span class="etag status">status</span></div>
+      </div>
+
+      <div class="note-box">
+        <div class="note-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Equipment Measurements (POST) — Integracao de Terceiros
+        </div>
+        O endpoint POST /organizations/{orgId}/equipment/{id}/measurements permite enviar dados telematicos de equipamentos de terceiros (nao-JD) para o Operations Center. Relevante caso o cliente deseje consolidar dados de maquinas Hitachi no ambiente JD. Disponivel via equipmentapi.deere.com.
+      </div>
+    </section>
+
+    <!-- ========================================= -->
+    <!-- JD AEMP                                   -->
+    <!-- ========================================= -->
+    <section class="api-section" id="jd-aemp">
+      <div class="section-header">
+        <div>
+          <div class="section-tag">ISO 15143-3 / AEMP 2.0</div>
+          <h3 class="section-title">John Deere — ISO 15143-3 (AEMP 2.0)</h3>
+          <div class="section-subtitle">Padrao de Interoperabilidade para Frotas Mistas</div>
+        </div>
+        <div class="section-count">2 endpoints</div>
+      </div>
+
+      <div class="meta-row">
+        <div class="meta-item">
+          <div class="meta-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+            Base URL (Sandbox)
+          </div>
+          <div class="meta-value">https://sandboxaemp.deere.com/Fleet/</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Autenticacao
+          </div>
+          <div class="meta-value text">OAuth 2.0 (Client Credentials) — Token Bearer</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+            Base URL (Producao)
+          </div>
+          <div class="meta-value">https://partneraemp.deere.com/Fleet/</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Polling Recomendado
+          </div>
+          <div class="meta-value text">Minimo 1 hora (respostas cacheadas a cada 60 min)</div>
+        </div>
+      </div>
+
+      <div class="endpoint-card" data-tags="loc hrs fuel status">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/Fleet/{pageNumber}</span>
+        </div>
+        <div class="endpoint-name">Fleet Snapshot — Visao Geral da Frota</div>
+        <div class="endpoint-desc">Endpoint principal do padrao AEMP 2.0. Retorna um snapshot com os dados mais recentes de todos os equipamentos da frota, paginado a cada 100 registros. Inclui: localizacao, horas cumulativas, combustivel, status do motor, idle hours e distancia percorrida.</div>
+        <div class="endpoint-tags">
+          <span class="etag loc">localizacao</span><span class="etag hrs">horas</span><span class="etag fuel">combustivel</span><span class="etag status">status</span>
+        </div>
+      </div>
+
+      <div class="endpoint-card" data-tags="loc hrs fuel status">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/Fleet/Equipment/{vin}</span>
+        </div>
+        <div class="endpoint-name">Dados AEMP de Equipamento Especifico</div>
+        <div class="endpoint-desc">Retorna os dados telematicos padronizados de um equipamento especifico usando seu VIN (Vehicle Identification Number) ou PIN. Formato de resposta em XML ou JSON via header Accept.</div>
+        <div class="endpoint-tags">
+          <span class="etag loc">localizacao</span><span class="etag hrs">horas</span><span class="etag fuel">combustivel</span><span class="etag status">status</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================= -->
+    <!-- HITACHI                                   -->
+    <!-- ========================================= -->
+    <section class="api-section" id="hitachi">
+      <div class="section-header">
+        <div>
+          <div class="section-tag">AEMP 1.2 + ISO 15143-3 / AEMP 2.0</div>
+          <h3 class="section-title">Hitachi Construction Machinery — Telematics API</h3>
+          <div class="section-subtitle">Global e-Service — AEMP 1.2 e ISO 15143-3 (AEMP 2.0)</div>
+        </div>
+        <div class="section-count">8 endpoints</div>
+      </div>
+
+      <div class="meta-row">
+        <div class="meta-item">
+          <div class="meta-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+            Base URL
+          </div>
+          <div class="meta-value">https://[endpoint-fornecido-pelo-dealer]/aemp/</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Autenticacao
+          </div>
+          <div class="meta-value text">OAuth 2.0 (Client Credentials) — Client ID + Client Secret via dealer</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Frequencias Disponiveis
+          </div>
+          <div class="meta-value text">10 min | 60 min | 24 horas (configuravel via dealer)</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>
+            Sandbox
+          </div>
+          <div class="meta-value text">Nao disponivel publicamente</div>
+        </div>
+      </div>
+
+      <div class="endpoint-card" data-tags="loc hrs fuel status">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/Fleet/{pageNumber}</span>
+        </div>
+        <div class="endpoint-name">Fleet Snapshot — Visao Geral da Frota Hitachi</div>
+        <div class="endpoint-desc">Endpoint principal de Fleet Snapshot. Retorna a ultima posicao conhecida, horas e combustivel de todas as maquinas Hitachi da frota. Paginado a cada 100 registros.</div>
+        <div class="endpoint-tags">
+          <span class="etag loc">localizacao</span><span class="etag hrs">horas</span><span class="etag fuel">combustivel</span><span class="etag status">status</span>
+        </div>
+      </div>
+
+      <div class="endpoint-card" data-tags="loc">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/Fleet/Equipment/{vin}/Locations</span>
+        </div>
+        <div class="endpoint-name">Historico de Localizacoes</div>
+        <div class="endpoint-desc">Serie temporal para historico de localizacoes de uma maquina Hitachi especifica. Permite reconstruir rotas e analisar padroes de deslocamento.</div>
+        <div class="endpoint-tags"><span class="etag loc">localizacao</span></div>
+      </div>
+
+      <div class="endpoint-card" data-tags="hrs">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/Fleet/Equipment/{vin}/CumulativeOperatingHours</span>
+        </div>
+        <div class="endpoint-name">Horas de Operacao Cumulativas</div>
+        <div class="endpoint-desc">Retorna o historico de horas de operacao cumulativas de uma maquina Hitachi. Dado vital para controle de depreciacao, manutencao preventiva e faturamento de locacao.</div>
+        <div class="endpoint-tags"><span class="etag hrs">horas</span></div>
+      </div>
+
+      <div class="endpoint-card" data-tags="fuel">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/Fleet/Equipment/{vin}/CumulativeFuelUsed</span>
+        </div>
+        <div class="endpoint-name">Combustivel Consumido Cumulativo</div>
+        <div class="endpoint-desc">Dados de consumo de combustivel ao longo do tempo para uma maquina Hitachi especifica. Permite analises de eficiencia e calculo de custos operacionais.</div>
+        <div class="endpoint-tags"><span class="etag fuel">combustivel</span></div>
+      </div>
+
+      <div class="endpoint-card" data-tags="hrs fuel">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/Fleet/Equipment/{vin}/CumulativeIdleHours</span>
+        </div>
+        <div class="endpoint-name">Horas de Marcha Lenta (Idle Hours)</div>
+        <div class="endpoint-desc">Retorna as horas em que a maquina esteve ligada mas ociosa (motor funcionando sem trabalho produtivo). Crucial para identificar desperdicio de combustivel.</div>
+        <div class="endpoint-tags"><span class="etag hrs">horas</span><span class="etag fuel">combustivel</span></div>
+      </div>
+
+      <div class="endpoint-card" data-tags="loc">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/Fleet/Equipment/{vin}/DistanceTraveled</span>
+        </div>
+        <div class="endpoint-name">Distancia Percorrida</div>
+        <div class="endpoint-desc">Retorna a distancia acumulada percorrida pela maquina. Dado padrao do AEMP 2.0, util para logistica e calculo de desgaste. Disponibilidade varia por modelo e regiao.</div>
+        <div class="endpoint-tags"><span class="etag loc">localizacao</span></div>
+      </div>
+
+      <div class="endpoint-card" data-tags="alert">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/Fleet/Equipment/{vin}/Faults</span>
+        </div>
+        <div class="endpoint-name">Codigos de Falha (DTC)</div>
+        <div class="endpoint-desc">Retorna os codigos de falha ativos e historicos de uma maquina Hitachi para diagnostico remoto. Extensao do padrao AEMP 2.0 com dados de saude da maquina.</div>
+        <div class="endpoint-tags"><span class="etag alert">alertas</span></div>
+      </div>
+
+      <div class="note-box">
+        <div class="note-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          P-API (Proprietaria) — Dados Estendidos
+        </div>
+        A Hitachi oferece uma API proprietaria (P-API) que, alem dos dados AEMP/ISO, fornece informacoes adicionais como: temperatura do oleo hidraulico, emissoes de CO2, horas de escavacao e giro, e payload em carregadeiras ZW-7. O acesso e exclusivo via dealer e nao possui documentacao publica. Deve ser considerada caso o projeto necessite de dados alem do padrao AEMP.
+      </div>
+    </section>
+
+    <!-- ========================================= -->
+    <!-- COVERAGE                                  -->
+    <!-- ========================================= -->
+    <section class="coverage-section" id="coverage">
+      <div class="section-header">
+        <div>
+          <h3 class="section-title">Cobertura de Dados por Fabricante</h3>
+          <div class="section-subtitle">Comparativo de disponibilidade de dados entre as APIs John Deere/Wirtgen e Hitachi</div>
+        </div>
+      </div>
+
+      <div class="coverage-grid">
+        <div class="coverage-row header">
+          <div class="cov-cell">Categoria de Dados</div>
+          <div class="cov-cell">John Deere</div>
+          <div class="cov-cell">Hitachi</div>
+        </div>
+        <div class="coverage-row">
+          <div class="cov-cell">Localizacao GPS</div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        </div>
+        <div class="coverage-row">
+          <div class="cov-cell">Horas de Operacao</div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        </div>
+        <div class="coverage-row">
+          <div class="cov-cell">Consumo de Combustivel</div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill mid" style="width:80%"></div></div><span class="cov-pct">80%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        </div>
+        <div class="coverage-row">
+          <div class="cov-cell">Horas de Marcha Lenta</div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:90%"></div></div><span class="cov-pct">90%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        </div>
+        <div class="coverage-row">
+          <div class="cov-cell">Distancia Percorrida</div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:90%"></div></div><span class="cov-pct">90%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill mid" style="width:70%"></div></div><span class="cov-pct">70%</span></div>
+        </div>
+        <div class="coverage-row">
+          <div class="cov-cell">Codigos de Falha (DTC)</div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill mid" style="width:80%"></div></div><span class="cov-pct">80%</span></div>
+        </div>
+        <div class="coverage-row">
+          <div class="cov-cell">Notificacoes em Tempo Real</div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill low" style="width:40%"></div></div><span class="cov-pct">40%</span></div>
+        </div>
+        <div class="coverage-row">
+          <div class="cov-cell">Dados de Operacao (WPT)</div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill low" style="width:40%"></div></div><span class="cov-pct">40%</span></div>
+        </div>
+        <div class="coverage-row">
+          <div class="cov-cell">Alertas de Geofence</div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill mid" style="width:70%"></div></div><span class="cov-pct">70%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill low" style="width:40%"></div></div><span class="cov-pct">40%</span></div>
+        </div>
+      </div>
+
+      <div class="note-box">
+        <div class="note-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Geofences — Correcao Importante
+        </div>
+        A JD nao possui um endpoint publico dedicado para criacao/edicao de geofences via API. Os alertas de geofence sao um tipo de alerta retornado pela Machine Alerts API quando configurados no Operations Center UI. A coluna reflete apenas leitura de alertas de geofence, nao gestao completa.
+      </div>
+
+      <!-- TECH COMPARISON -->
+      <h3 class="section-title" style="margin:32px 0 16px">Comparativo Tecnico</h3>
+      <div class="tech-table">
+        <div class="tech-row header">
+          <div class="tech-cell">Parametro</div>
+          <div class="tech-cell">John Deere / Wirtgen</div>
+          <div class="tech-cell">Hitachi</div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-cell">Padrao</div>
+          <div class="tech-cell"><span class="val">ISO 15143-3 + Proprietario</span></div>
+          <div class="tech-cell"><span class="val">AEMP 1.2 + ISO 15143-3</span></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-cell">Autenticacao</div>
+          <div class="tech-cell"><span class="val">OAuth 2.0 (Auth Code)</span></div>
+          <div class="tech-cell"><span class="val">OAuth 2.0 (Client Cred.)</span></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-cell">Freq. API AEMP</div>
+          <div class="tech-cell"><span class="val">Cache 1 hora (min.)</span></div>
+          <div class="tech-cell"><span class="val">10 min | 60 min | 24h</span></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-cell">Freq. Proprietaria</div>
+          <div class="tech-cell"><span class="val">5s (WPT) — dados de campo</span></div>
+          <div class="tech-cell"><span class="val">P-API via dealer</span></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-cell">Acesso</div>
+          <div class="tech-cell"><span class="mono">developer.deere.com</span></div>
+          <div class="tech-cell"><span class="val">Via dealer autorizado</span></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-cell">Sandbox</div>
+          <div class="tech-cell"><span class="mono">sandboxapi.deere.com</span></div>
+          <div class="tech-cell"><span class="val">Nao disponivel publicamente</span></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-cell">Webhooks</div>
+          <div class="tech-cell"><span class="yes">Sim (nativo)</span></div>
+          <div class="tech-cell"><span class="no">Nao documentado</span></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-cell">Frota Mista</div>
+          <div class="tech-cell"><span class="yes">Sim (Assets API + AEMP)</span></div>
+          <div class="tech-cell"><span class="yes">Sim (via AEMP 2.0)</span></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-cell">Formato Resposta</div>
+          <div class="tech-cell"><span class="val">JSON (principal) / XML</span></div>
+          <div class="tech-cell"><span class="val">XML (padrao) / JSON</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================= -->
+    <!-- USE CASES                                 -->
+    <!-- ========================================= -->
+    <section class="api-section" id="usecases">
+      <div class="section-header">
+        <div>
+          <h3 class="section-title">Casos de Uso Recomendados</h3>
+          <div class="section-subtitle">Aplicacoes praticas para o aplicativo de monitoramento</div>
+        </div>
+      </div>
+
+      <div class="usecase-card">
+        <h4>Dashboard Unificado de Frota</h4>
+        <p>Usar os endpoints Fleet Snapshot (AEMP 2.0) de ambas as fabricantes para exibir todas as maquinas em um unico mapa interativo, independente da marca.</p>
+        <div class="usecase-endpoints">
+          <span class="ue-tag">JD AEMP /Fleet/{page}</span>
+          <span class="ue-tag hi">Hitachi /Fleet/{page}</span>
+        </div>
+      </div>
+
+      <div class="usecase-card">
+        <h4>Gestao de Eficiencia de Combustivel</h4>
+        <p>Cruzar CumulativeFuelUsed com CumulativeIdleHours para identificar maquinas com alto indice de ociosidade e gerar relatorios de economia.</p>
+        <div class="usecase-endpoints">
+          <span class="ue-tag hi">Hitachi /CumulativeFuelUsed</span>
+          <span class="ue-tag hi">Hitachi /CumulativeIdleHours</span>
+          <span class="ue-tag">JD /machineDeviceStateReports</span>
+        </div>
+      </div>
+
+      <div class="usecase-card">
+        <h4>Manutencao Preditiva</h4>
+        <p>Monitorar machineAlerts e Faults para notificar mecanicos imediatamente quando um codigo de erro grave (DTC) for emitido por qualquer maquina da frota.</p>
+        <div class="usecase-endpoints">
+          <span class="ue-tag">JD /machineAlerts</span>
+          <span class="ue-tag hi">Hitachi /Faults</span>
+          <span class="ue-tag">JD POST /webhooks</span>
+        </div>
+      </div>
+
+      <div class="usecase-card">
+        <h4>Controle de Horas e Faturamento</h4>
+        <p>Usar CumulativeOperatingHours para automatizar o faturamento de maquinas alugadas e agendar revisoes preventivas com base em horas reais de uso.</p>
+        <div class="usecase-endpoints">
+          <span class="ue-tag">JD /machineEngineHours</span>
+          <span class="ue-tag">JD /machineHoursOfOperation</span>
+          <span class="ue-tag hi">Hitachi /CumulativeOperatingHours</span>
+        </div>
+      </div>
+
+      <div class="usecase-card">
+        <h4>Rastreamento e Logistica</h4>
+        <p>Combinar dados de localizacao e distancia percorrida para otimizar rotas, calcular tempo de deslocamento entre obras e controlar quilometragem.</p>
+        <div class="usecase-endpoints">
+          <span class="ue-tag">JD /machineLocations</span>
+          <span class="ue-tag">JD /machineDistanceTraveled</span>
+          <span class="ue-tag hi">Hitachi /Locations</span>
+          <span class="ue-tag hi">Hitachi /DistanceTraveled</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================= -->
+    <!-- REFERENCES                                -->
+    <!-- ========================================= -->
+    <section class="api-section" id="refs">
+      <div class="section-header">
+        <div>
+          <h3 class="section-title">Referencias Oficiais</h3>
+          <div class="section-subtitle">Fontes utilizadas para o mapeamento — toda a informacao e baseada em documentacao publica</div>
+        </div>
+      </div>
+
+      <div class="ref-list">
+        <div class="ref-item"><span class="ref-num">1</span><span class="ref-text">John Deere Developer Portal — Operations Center Equipment API</span></div>
+        <div class="ref-item"><span class="ref-num">2</span><span class="ref-text">John Deere Developer Portal — ISO 15143-3 (AEMP 2.0)</span></div>
+        <div class="ref-item"><span class="ref-num">3</span><span class="ref-text">John Deere Developer Portal — Machine Alerts</span></div>
+        <div class="ref-item"><span class="ref-num">4</span><span class="ref-text">John Deere Developer Portal — Machine Device State Reports</span></div>
+        <div class="ref-item"><span class="ref-num">5</span><span class="ref-text">John Deere Developer Portal — Machine Hours of Operation</span></div>
+        <div class="ref-item"><span class="ref-num">6</span><span class="ref-text">John Deere Developer Portal — Machine Distance Traveled</span></div>
+        <div class="ref-item"><span class="ref-num">7</span><span class="ref-text">John Deere Developer Portal — Equipment Measurements (POST)</span></div>
+        <div class="ref-item"><span class="ref-num">8</span><span class="ref-text">John Deere Developer Portal — Organizations API</span></div>
+        <div class="ref-item"><span class="ref-num">9</span><span class="ref-text">Wirtgen Group — FAQ John Deere Operations Center Construction</span></div>
+        <div class="ref-item"><span class="ref-num">10</span><span class="ref-text">Wirtgen Group — Quick User Guide Operations Center (PDF)</span></div>
+        <div class="ref-item"><span class="ref-num">11</span><span class="ref-text">Hitachi Construction Machinery — Telematics API (Global)</span></div>
+        <div class="ref-item"><span class="ref-num">12</span><span class="ref-text">Hitachi Construction Machinery — Telematics API (Europe)</span></div>
+        <div class="ref-item"><span class="ref-num">13</span><span class="ref-text">Hitachi — Meets growing demand for mixed fleet data</span></div>
+        <div class="ref-item"><span class="ref-num">14</span><span class="ref-text">Hitachi — P-API Proprietary Data (via dealer documentation)</span></div>
+        <div class="ref-item"><span class="ref-num">15</span><span class="ref-text">Hiboo Help Center — Hitachi API Credentials</span></div>
+        <div class="ref-item"><span class="ref-num">16</span><span class="ref-text">AutoPi — AEMP 2.0 Explained: Mixed-Fleet Telematics Standard</span></div>
+        <div class="ref-item"><span class="ref-num">17</span><span class="ref-text">Caterpillar Digital — ISO 15143-3 (AEMP 2.0) API Developer Guide</span></div>
+        <div class="ref-item"><span class="ref-num">18</span><span class="ref-text">Geoforce — AEMP/ISO 15143-3 Mixed-Fleet Data Ingestion</span></div>
+        <div class="ref-item"><span class="ref-num">19</span><span class="ref-text">Esri — Connecting to John Deere JDLink Machine Data API (PDF)</span></div>
+        <div class="ref-item"><span class="ref-num">20</span><span class="ref-text">GitHub — deere-sdk: Unofficial TypeScript SDK for John Deere API</span></div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span class="footer-tag">ISO 15143-3</span>
+    <span class="footer-tag">AEMP 2.0</span>
+    <span class="footer-tag">OAuth 2.0</span>
+    <span class="footer-text">Mapeamento baseado em documentacao oficial — John Deere, Wirtgen Group e Hitachi Construction Machinery</span>
+  </footer>
+
+</div>
+
+<script>
+// Sidebar navigation active state
+document.querySelectorAll('.sidebar-section:first-of-type .nav-item').forEach(item => {
+  item.addEventListener('click', function() {
+    document.querySelectorAll('.sidebar-section:first-of-type .nav-item').forEach(n => n.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// Filter functionality
+const filterItems = document.querySelectorAll('[data-filter]');
+filterItems.forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    const filter = this.dataset.filter;
+    
+    // Update active state
+    filterItems.forEach(f => f.classList.remove('active'));
+    this.classList.add('active');
+    
+    // Filter endpoint cards
+    document.querySelectorAll('.endpoint-card').forEach(card => {
+      if (filter === 'all') {
+        card.style.display = '';
+        return;
+      }
+      const tags = card.dataset.tags || '';
+      card.style.display = tags.includes(filter) ? '' : 'none';
+    });
+  });
+});
+
+// Scroll spy for navigation
+const sections = document.querySelectorAll('.api-section, .coverage-section');
+const navItems = document.querySelectorAll('.sidebar-section:first-of-type .nav-item');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navItems.forEach(n => n.classList.remove('active'));
+      const activeNav = document.querySelector(`.sidebar-section:first-of-type a[href="#${id}"]`);
+      if (activeNav) activeNav.classList.add('active');
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-80px 0px -60% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+// Copy endpoint path
+document.querySelectorAll('.endpoint-path').forEach(path => {
+  path.style.cursor = 'pointer';
+  path.addEventListener('click', function() {
+    navigator.clipboard.writeText(this.textContent).then(() => {
+      const original = this.style.color;
+      this.style.color = 'var(--accent-green)';
+      setTimeout(() => { this.style.color = original; }, 600);
+    });
+  });
+});
+</script>
+
+</body>
+</html>
