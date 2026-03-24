@@ -26,6 +26,8 @@
   --accent-red:#e74c3c;
   --accent-blue:#3498db;
   --accent-cyan:#00bcd4;
+  --accent-purple:#9b59b6;
+  --accent-teal:#1abc9c;
   --method-get:#4caf50;
   --method-post:#e67e22;
   --method-put:#3498db;
@@ -186,12 +188,14 @@ body{
 }
 .hero-desc strong.jd{color:var(--accent-green)}
 .hero-desc strong.hi{color:var(--accent-orange)}
+.hero-desc strong.dp{color:var(--accent-purple)}
+.hero-desc strong.tu{color:var(--accent-teal)}
 .hero-stats{
   display:flex;gap:0;margin-top:32px;position:relative;
   border:1px solid var(--border-color);
   border-radius:8px;
   overflow:hidden;
-  max-width:640px;
+  max-width:700px;
   background:rgba(15,19,24,.6);
   backdrop-filter:blur(8px);
 }
@@ -210,6 +214,7 @@ body{
 .stat-value.yellow{color:var(--accent-yellow)}
 .stat-value.white{color:var(--text-primary)}
 .stat-value.red{color:var(--accent-orange)}
+.stat-value.purple{color:var(--accent-purple)}
 .stat-label{
   font-size:.7rem;
   color:var(--text-muted);
@@ -299,6 +304,7 @@ body{
   margin-bottom:10px;
   transition:background .15s,border-color .15s;
   cursor:default;
+  position:relative;
 }
 .endpoint-card:hover{
   background:var(--bg-card-hover);
@@ -308,6 +314,18 @@ body{
 .endpoint-card.post{border-left-color:var(--method-post)}
 .endpoint-card.put{border-left-color:var(--method-put)}
 .endpoint-card.delete{border-left-color:var(--method-delete)}
+.endpoint-card.selected{
+  background:rgba(76,175,80,.06);
+  border-color:rgba(76,175,80,.35);
+}
+.endpoint-card.error-card{
+  border-left-color:var(--accent-red);
+  opacity:.75;
+}
+.endpoint-card.pending-card{
+  border-left-color:var(--accent-yellow);
+  opacity:.8;
+}
 .endpoint-top{
   display:flex;align-items:center;gap:10px;
   margin-bottom:8px;
@@ -352,7 +370,7 @@ body{
   line-height:1.6;
 }
 .endpoint-tags{
-  display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;
+  display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center;
 }
 .etag{
   font-size:.65rem;
@@ -368,6 +386,49 @@ body{
 .etag.fuel{background:rgba(230,126,34,.1);color:var(--accent-orange);border-color:rgba(230,126,34,.15)}
 .etag.alert{background:rgba(231,76,60,.1);color:var(--accent-red);border-color:rgba(231,76,60,.15)}
 .etag.status{background:rgba(0,188,212,.1);color:var(--accent-cyan);border-color:rgba(0,188,212,.15)}
+.etag.maint{background:rgba(155,89,182,.1);color:var(--accent-purple);border-color:rgba(155,89,182,.15)}
+.etag.error-tag{background:rgba(231,76,60,.15);color:var(--accent-red);border-color:rgba(231,76,60,.3);font-size:.6rem}
+.etag.pending-tag{background:rgba(212,160,23,.15);color:var(--accent-yellow);border-color:rgba(212,160,23,.3);font-size:.6rem}
+/* CHECKBOX */
+.endpoint-checkbox-wrap{
+  margin-left:auto;
+  display:flex;align-items:center;gap:8px;
+  flex-shrink:0;
+}
+.endpoint-checkbox{
+  appearance:none;
+  -webkit-appearance:none;
+  width:18px;height:18px;
+  border:1.5px solid var(--border-color);
+  border-radius:4px;
+  background:var(--bg-primary);
+  cursor:pointer;
+  position:relative;
+  transition:all .15s;
+  flex-shrink:0;
+}
+.endpoint-checkbox:hover{
+  border-color:var(--accent-green);
+}
+.endpoint-checkbox:checked{
+  background:var(--accent-green);
+  border-color:var(--accent-green);
+}
+.endpoint-checkbox:checked::after{
+  content:'';
+  position:absolute;
+  top:2px;left:5px;
+  width:5px;height:9px;
+  border:2px solid #fff;
+  border-top:none;border-left:none;
+  transform:rotate(45deg);
+}
+.check-label{
+  font-size:.7rem;
+  color:var(--text-muted);
+  font-family:var(--font-mono);
+  white-space:nowrap;
+}
 /* NOTES */
 .note-box{
   background:rgba(212,160,23,.05);
@@ -379,6 +440,14 @@ body{
   color:var(--text-secondary);
   line-height:1.7;
 }
+.note-box.info{
+  background:rgba(52,152,219,.05);
+  border-color:rgba(52,152,219,.15);
+}
+.note-box.error{
+  background:rgba(231,76,60,.05);
+  border-color:rgba(231,76,60,.15);
+}
 .note-box .note-title{
   font-weight:600;
   color:var(--accent-yellow);
@@ -386,7 +455,26 @@ body{
   display:flex;align-items:center;gap:8px;
   font-size:.78rem;
 }
+.note-box.info .note-title{color:var(--accent-blue)}
+.note-box.error .note-title{color:var(--accent-red)}
 .note-box .note-title svg{width:15px;height:15px}
+/* STATUS BADGE */
+.status-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--font-mono);
+  font-size:.65rem;
+  padding:3px 10px;
+  border-radius:4px;
+  font-weight:600;
+  letter-spacing:.03em;
+}
+.status-badge.ok{background:rgba(76,175,80,.15);color:var(--accent-green);border:1px solid rgba(76,175,80,.25)}
+.status-badge.err{background:rgba(231,76,60,.12);color:var(--accent-red);border:1px solid rgba(231,76,60,.2)}
+.status-badge.pending{background:rgba(212,160,23,.12);color:var(--accent-yellow);border:1px solid rgba(212,160,23,.2)}
+.status-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.status-dot.ok{background:var(--accent-green)}
+.status-dot.err{background:var(--accent-red)}
+.status-dot.pending{background:var(--accent-yellow)}
 /* COVERAGE TABLE */
 .coverage-section{padding-top:48px}
 .coverage-grid{
@@ -510,6 +598,16 @@ body{
   color:var(--accent-orange);
   border-color:rgba(230,126,34,.15);
 }
+.ue-tag.dp{
+  background:rgba(155,89,182,.08);
+  color:var(--accent-purple);
+  border-color:rgba(155,89,182,.15);
+}
+.ue-tag.tu{
+  background:rgba(26,188,156,.08);
+  color:var(--accent-teal);
+  border-color:rgba(26,188,156,.15);
+}
 /* REFERENCES */
 .ref-list{margin-top:16px}
 .ref-item{
@@ -530,6 +628,93 @@ body{
   margin-top:2px;
 }
 .ref-text{color:var(--text-secondary)}
+/* SUBMIT AREA */
+.submit-area-inline{
+  margin:40px 0 8px;
+  background:var(--bg-sidebar);
+  border:1px solid var(--border-color);
+  border-radius:8px;
+  padding:20px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:20px;
+}
+.submit-summary{
+  font-size:.82rem;
+  color:var(--text-secondary);
+  display:flex;align-items:center;gap:12px;
+}
+.submit-count{
+  font-family:var(--font-mono);
+  font-size:.9rem;
+  font-weight:700;
+  color:var(--accent-green);
+}
+.submit-btn{
+  display:flex;align-items:center;gap:10px;
+  background:var(--accent-green);
+  color:#0a1a0a;
+  border:none;
+  padding:12px 28px;
+  border-radius:6px;
+  font-family:var(--font-mono);
+  font-size:.82rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  cursor:pointer;
+  transition:all .15s;
+  white-space:nowrap;
+}
+.submit-btn:hover{
+  background:#5dc461;
+  transform:translateY(-1px);
+  box-shadow:0 4px 16px rgba(76,175,80,.25);
+}
+.submit-btn:active{transform:translateY(0)}
+.submit-btn:disabled{
+  background:var(--border-color);
+  color:var(--text-muted);
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
+}
+.submit-btn svg{width:16px;height:16px;flex-shrink:0}
+.select-all-btn{
+  display:flex;align-items:center;gap:6px;
+  background:none;
+  border:1px solid var(--border-color);
+  color:var(--text-secondary);
+  padding:8px 14px;
+  border-radius:5px;
+  font-family:var(--font-mono);
+  font-size:.72rem;
+  cursor:pointer;
+  transition:all .15s;
+}
+.select-all-btn:hover{
+  border-color:var(--accent-yellow-dim);
+  color:var(--accent-yellow);
+}
+/* TOAST */
+.toast{
+  position:fixed;
+  bottom:32px;right:32px;
+  background:var(--bg-card);
+  border:1px solid var(--border-color);
+  border-radius:8px;
+  padding:14px 20px;
+  font-size:.82rem;
+  color:var(--text-primary);
+  display:flex;align-items:center;gap:10px;
+  z-index:200;
+  transform:translateY(20px);
+  opacity:0;
+  transition:all .3s;
+  max-width:340px;
+  pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:rgba(76,175,80,.3);background:rgba(76,175,80,.06)}
+.toast.error-toast{border-color:rgba(231,76,60,.3);background:rgba(231,76,60,.06)}
 /* FOOTER */
 .footer{
   padding:32px 48px;
@@ -568,6 +753,7 @@ body{
   .coverage-row{grid-template-columns:1fr 90px 90px}
   .tech-row{grid-template-columns:120px 1fr 1fr}
   .footer{padding:24px}
+  .submit-area-inline{padding:16px;flex-wrap:wrap}
 }
 </style>
 </head>
@@ -593,6 +779,14 @@ body{
     <a href="#hitachi" class="nav-item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
       Hitachi Telematics
+    </a>
+    <a href="#doppstadt" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Doppstadt / Proemion
+    </a>
+    <a href="#trackunit" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Manitou / Trackunit
     </a>
     <a href="#coverage" class="nav-item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
@@ -634,6 +828,10 @@ body{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       Status
     </a>
+    <a href="#" class="nav-item" data-filter="maint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      Manutencao
+    </a>
   </div>
 </aside>
 
@@ -649,22 +847,28 @@ body{
     <h1>API Mapping</h1>
     <h2>Monitoramento de Maquinas Agricolas e de Construcao</h2>
     <p class="hero-desc">
-      Mapeamento tecnico das APIs da <strong class="jd">John Deere / Wirtgen Group</strong> e
-      <strong class="hi">Hitachi Construction Machinery</strong> para desenvolvimento de aplicativo
-      de monitoramento de frota. Todos os dados sao baseados exclusivamente na documentacao oficial das fabricantes.
+      Mapeamento tecnico das APIs da <strong class="jd">John Deere / Wirtgen Group</strong>,
+      <strong class="hi">Hitachi Construction Machinery</strong>,
+      <strong class="dp">Doppstadt / Proemion</strong> e
+      <strong class="tu">Manitou / Gehl / Trackunit</strong>
+      para desenvolvimento de aplicativo de monitoramento de frota.
     </p>
     <div class="hero-stats">
       <div class="stat-item">
-        <div class="stat-value green">21</div>
+        <div class="stat-value green">27</div>
         <div class="stat-label">Endpoints Mapeados</div>
       </div>
       <div class="stat-item">
-        <div class="stat-value yellow">2</div>
+        <div class="stat-value yellow">4</div>
         <div class="stat-label">Fabricantes</div>
       </div>
       <div class="stat-item">
         <div class="stat-value white">ISO</div>
         <div class="stat-label">15143-3 / AEMP 2.0</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value purple">145</div>
+        <div class="stat-label">Sinais Proemion</div>
       </div>
       <div class="stat-item">
         <div class="stat-value red">10min</div>
@@ -685,7 +889,10 @@ body{
           <h3 class="section-title">John Deere Operations Center API</h3>
           <div class="section-subtitle">Precision Tech APIs — Gestao de Equipamentos e Frota</div>
         </div>
-        <div class="section-count">11 endpoints</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="status-badge ok"><span class="status-dot ok"></span>Autenticado</span>
+          <div class="section-count">11 endpoints</div>
+        </div>
       </div>
 
       <div class="meta-row">
@@ -701,7 +908,7 @@ body{
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             Autenticacao
           </div>
-          <div class="meta-value text">OAuth 2.0 (Authorization Code Flow) — Scopes: ag1, ag2, ag3</div>
+          <div class="meta-value text">OAuth 2.0 (Authorization Code Flow) — Scopes: ag1, ag2, ag3, eq1, eq2, openid</div>
         </div>
         <div class="meta-item">
           <div class="meta-label">
@@ -713,18 +920,18 @@ body{
         <div class="meta-item">
           <div class="meta-label">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>
-            Portal
+            Callback
           </div>
-          <div class="meta-value">https://developer.deere.com</div>
+          <div class="meta-value" style="font-size:.7rem">https://is-intelligentsolutions.pt/MOVITER/index.php?api=john_deere&action=jd_callback</div>
         </div>
       </div>
 
       <div class="note-box">
         <div class="note-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-          Pre-requisito: Organizations
+          Pre-requisito: Organizations — 12 organizacoes retornadas (customers + dealers)
         </div>
-        O endpoint GET /organizations e obrigatorio como ponto de partida. Sem listar as organizacoes do usuario autenticado, nao e possivel chamar nenhum endpoint que depende de {orgId}. A conexao entre a aplicacao e a organizacao do usuario e feita via https://connections.deere.com.
+        O endpoint GET /organizations e obrigatorio como ponto de partida. Sem listar as organizacoes do usuario autenticado, nao e possivel chamar nenhum endpoint que depende de {orgId}. Campos: id, name, type, accountId, member, internal, hierarchyEnabled, links.
       </div>
 
       <!-- GET /organizations -->
@@ -732,28 +939,40 @@ body{
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
           <span class="endpoint-path">/organizations</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="jd-organizations" data-api="john_deere" data-path="/organizations" data-label="JD Listar Organizacoes">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Listar Organizacoes</div>
-        <div class="endpoint-desc">Retorna as organizacoes vinculadas ao usuario autenticado. Ponto de partida obrigatorio para todos os demais endpoints. Inclui links para recursos de cada organizacao (machines, fields, assets, etc).</div>
-        <div class="endpoint-tags"><span class="etag status">status</span></div>
+        <div class="endpoint-desc">Retorna as organizacoes vinculadas ao usuario autenticado. Ponto de partida obrigatorio para todos os demais endpoints. Inclui links para recursos de cada organizacao.</div>
+        <div class="endpoint-tags"><span class="etag status">status</span><span class="etag ok" style="background:rgba(76,175,80,.15);color:var(--accent-green);border-color:rgba(76,175,80,.3);font-size:.6rem;font-family:var(--font-mono);padding:2px 8px;border-radius:3px;border:1px solid">200 OK</span></div>
       </div>
 
       <!-- GET /equipment -->
-      <div class="endpoint-card" data-tags="status">
+      <div class="endpoint-card error-card" data-tags="status">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
           <span class="endpoint-path">/equipment</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="jd-equipment" data-api="john_deere" data-path="/equipment" data-label="JD Listar Equipamentos">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Listar Equipamentos</div>
-        <div class="endpoint-desc">Retorna a lista de equipamentos (maquinas e implementos) associados a uma organizacao. Suporta filtros por categoria, conectividade e IDs de organizacao. Substitui as antigas APIs separadas de Machines e Implements (depreciadas em Jan/2025).</div>
-        <div class="endpoint-tags"><span class="etag status">status</span></div>
+        <div class="endpoint-desc">Retorna a lista de equipamentos (maquinas e implementos) associados a uma organizacao. Substitui as antigas APIs separadas de Machines e Implements (depreciadas Jan/2025).</div>
+        <div class="endpoint-tags"><span class="etag status">status</span><span class="etag error-tag">404 — Investigar /organizations/{'{id}'}/equipment</span></div>
       </div>
 
       <!-- GET /equipment/{id} -->
       <div class="endpoint-card" data-tags="status">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/equipment/{id}</span>
+          <span class="endpoint-path">/equipment/{'{id}'}</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="jd-equipment-id" data-api="john_deere" data-path="/equipment/{id}" data-label="JD Detalhes Equipamento">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Detalhes do Equipamento</div>
         <div class="endpoint-desc">Retorna informacoes detalhadas de uma maquina especifica, incluindo especificacoes tecnicas, estado atual de conectividade e dispositivos pareados.</div>
@@ -764,7 +983,11 @@ body{
       <div class="endpoint-card" data-tags="loc">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/organizations/{orgId}/machineLocations</span>
+          <span class="endpoint-path">/organizations/{'{orgId}'}/machineLocations</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="jd-machineLocations" data-api="john_deere" data-path="/organizations/{orgId}/machineLocations" data-label="JD Localizacoes de Maquinas">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Localizacoes de Maquinas</div>
         <div class="endpoint-desc">Fornece o historico de localizacao GPS das maquinas de uma organizacao. Permite rastreamento em tempo real e analise de rotas percorridas.</div>
@@ -775,10 +998,14 @@ body{
       <div class="endpoint-card" data-tags="alert">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/organizations/{orgId}/machineAlerts</span>
+          <span class="endpoint-path">/organizations/{'{orgId}'}/machineAlerts</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="jd-machineAlerts" data-api="john_deere" data-path="/organizations/{orgId}/machineAlerts" data-label="JD Alertas DTC">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Alertas de Maquinas (DTC)</div>
-        <div class="endpoint-desc">Retorna alertas e codigos de falha (Diagnostic Trouble Codes) gerados pelas maquinas. Inclui severidade, descricao e timestamp. Tipos de alerta: machine, geofence e maintenance.</div>
+        <div class="endpoint-desc">Retorna alertas e codigos de falha (Diagnostic Trouble Codes) gerados pelas maquinas. Inclui severidade, descricao e timestamp. Tipos: machine, geofence e maintenance.</div>
         <div class="endpoint-tags"><span class="etag alert">alertas</span></div>
       </div>
 
@@ -786,7 +1013,11 @@ body{
       <div class="endpoint-card" data-tags="hrs">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/organizations/{orgId}/machineEngineHours</span>
+          <span class="endpoint-path">/organizations/{'{orgId}'}/machineEngineHours</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="jd-machineEngineHours" data-api="john_deere" data-path="/organizations/{orgId}/machineEngineHours" data-label="JD Horas de Motor">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Horas de Motor (Cumulativas)</div>
         <div class="endpoint-desc">Retorna as horas cumulativas de operacao do motor de cada maquina. Dado fundamental para controle de depreciacao e agendamento de manutencao.</div>
@@ -797,10 +1028,14 @@ body{
       <div class="endpoint-card" data-tags="hrs">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/organizations/{orgId}/machineHoursOfOperation</span>
+          <span class="endpoint-path">/organizations/{'{orgId}'}/machineHoursOfOperation</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="jd-machineHoursOfOperation" data-api="john_deere" data-path="/organizations/{orgId}/machineHoursOfOperation" data-label="JD Horas de Operacao">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Horas de Operacao (Ligado/Desligado)</div>
-        <div class="endpoint-desc">Fornece as duracoes em que o motor esteve ligado ou desligado em um periodo especifico. Difere de Engine Hours por oferecer intervalos temporais detalhados em vez de apenas o valor cumulativo.</div>
+        <div class="endpoint-desc">Fornece as duracoes em que o motor esteve ligado ou desligado em um periodo especifico. Difere de Engine Hours por oferecer intervalos temporais detalhados.</div>
         <div class="endpoint-tags"><span class="etag hrs">horas</span></div>
       </div>
 
@@ -808,7 +1043,11 @@ body{
       <div class="endpoint-card" data-tags="loc">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/organizations/{orgId}/machineDistanceTraveled</span>
+          <span class="endpoint-path">/organizations/{'{orgId}'}/machineDistanceTraveled</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="jd-machineDistanceTraveled" data-api="john_deere" data-path="/organizations/{orgId}/machineDistanceTraveled" data-label="JD Distancia Percorrida">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Distancia Percorrida</div>
         <div class="endpoint-desc">Retorna a distancia total percorrida por cada maquina. Util para controle de quilometragem, logistica e calculo de desgaste mecanico.</div>
@@ -819,7 +1058,11 @@ body{
       <div class="endpoint-card" data-tags="status fuel">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/organizations/{orgId}/machineDeviceStateReports</span>
+          <span class="endpoint-path">/organizations/{'{orgId}'}/machineDeviceStateReports</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="jd-machineDeviceStateReports" data-api="john_deere" data-path="/organizations/{orgId}/machineDeviceStateReports" data-label="JD Estado do Dispositivo">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Estado do Dispositivo</div>
         <div class="endpoint-desc">Fornece o estado atual do dispositivo telematico instalado na maquina, incluindo nivel de combustivel, estado do motor e status de conectividade.</div>
@@ -830,7 +1073,11 @@ body{
       <div class="endpoint-card" data-tags="status loc">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/organizations/{orgId}/assets</span>
+          <span class="endpoint-path">/organizations/{'{orgId}'}/assets</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="jd-assets" data-api="john_deere" data-path="/organizations/{orgId}/assets" data-label="JD Assets Rastreados">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Assets (Ativos Rastreados)</div>
         <div class="endpoint-desc">Gerencia ativos rastreados que nao sao necessariamente maquinas John Deere, permitindo integracao de equipamentos de terceiros na plataforma.</div>
@@ -842,9 +1089,13 @@ body{
         <div class="endpoint-top">
           <span class="method-badge post">POST</span>
           <span class="endpoint-path">/webhooks</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="jd-webhooks" data-api="john_deere" data-path="/webhooks" data-label="JD Webhooks Notificacoes">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Webhooks — Notificacoes em Tempo Real</div>
-        <div class="endpoint-desc">Configura webhooks para receber notificacoes em tempo real quando eventos ocorrem (alertas, mudancas de estado, novas localizacoes). A JD tambem oferece Data Subscription Service para eventos mais granulares (flags, map layers, etc).</div>
+        <div class="endpoint-desc">Configura webhooks para receber notificacoes em tempo real quando eventos ocorrem (alertas, mudancas de estado, novas localizacoes). A JD tambem oferece Data Subscription Service para eventos mais granulares.</div>
         <div class="endpoint-tags"><span class="etag alert">alertas</span><span class="etag status">status</span></div>
       </div>
 
@@ -853,7 +1104,7 @@ body{
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
           Equipment Measurements (POST) — Integracao de Terceiros
         </div>
-        O endpoint POST /organizations/{orgId}/equipment/{id}/measurements permite enviar dados telematicos de equipamentos de terceiros (nao-JD) para o Operations Center. Relevante caso o cliente deseje consolidar dados de maquinas Hitachi no ambiente JD. Disponivel via equipmentapi.deere.com.
+        O endpoint POST /organizations/{'{orgId}'}/equipment/{'{id}'}/measurements permite enviar dados telematicos de equipamentos de terceiros (nao-JD) para o Operations Center. Relevante caso o cliente deseje consolidar dados de maquinas Hitachi no ambiente JD.
       </div>
     </section>
 
@@ -867,7 +1118,7 @@ body{
           <h3 class="section-title">John Deere — ISO 15143-3 (AEMP 2.0)</h3>
           <div class="section-subtitle">Padrao de Interoperabilidade para Frotas Mistas</div>
         </div>
-        <div class="section-count">2 endpoints</div>
+        
       </div>
 
       <div class="meta-row">
@@ -901,25 +1152,35 @@ body{
         </div>
       </div>
 
-      <div class="endpoint-card" data-tags="loc hrs fuel status">
+
+
+      <div class="endpoint-card error-card" data-tags="loc hrs fuel status">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/Fleet/{pageNumber}</span>
+          <span class="endpoint-path">/Fleet/{'{pageNumber}'}</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="jd-aemp-fleet" data-api="john_deere_aemp" data-path="/Fleet/{pageNumber}" data-label="JD AEMP Fleet Snapshot">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Fleet Snapshot — Visao Geral da Frota</div>
-        <div class="endpoint-desc">Endpoint principal do padrao AEMP 2.0. Retorna um snapshot com os dados mais recentes de todos os equipamentos da frota, paginado a cada 100 registros. Inclui: localizacao, horas cumulativas, combustivel, status do motor, idle hours e distancia percorrida.</div>
+        <div class="endpoint-desc">Endpoint principal do padrao AEMP 2.0. Retorna snapshot com dados mais recentes de todos os equipamentos da frota. Inclui: localizacao, horas cumulativas, combustivel, status do motor, idle hours e distancia.</div>
         <div class="endpoint-tags">
           <span class="etag loc">localizacao</span><span class="etag hrs">horas</span><span class="etag fuel">combustivel</span><span class="etag status">status</span>
         </div>
       </div>
 
-      <div class="endpoint-card" data-tags="loc hrs fuel status">
+      <div class="endpoint-card error-card" data-tags="loc hrs fuel status">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/Fleet/Equipment/{vin}</span>
+          <span class="endpoint-path">/Fleet/Equipment/{'{vin}'}</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="jd-aemp-equipment-vin" data-api="john_deere_aemp" data-path="/Fleet/Equipment/{vin}" data-label="JD AEMP Equipamento VIN">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Dados AEMP de Equipamento Especifico</div>
-        <div class="endpoint-desc">Retorna os dados telematicos padronizados de um equipamento especifico usando seu VIN (Vehicle Identification Number) ou PIN. Formato de resposta em XML ou JSON via header Accept.</div>
+        <div class="endpoint-desc">Retorna os dados telematicos padronizados de um equipamento especifico usando seu VIN. Formato de resposta em XML ou JSON via header Accept.</div>
         <div class="endpoint-tags">
           <span class="etag loc">localizacao</span><span class="etag hrs">horas</span><span class="etag fuel">combustivel</span><span class="etag status">status</span>
         </div>
@@ -936,110 +1197,153 @@ body{
           <h3 class="section-title">Hitachi Construction Machinery — Telematics API</h3>
           <div class="section-subtitle">Global e-Service — AEMP 1.2 e ISO 15143-3 (AEMP 2.0)</div>
         </div>
-        <div class="section-count">8 endpoints</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="status-badge pending"><span class="status-dot pending"></span>Pendente — 1011 maq.</span>
+          <div class="section-count">8 endpoints</div>
+        </div>
       </div>
 
       <div class="meta-row">
         <div class="meta-item">
-          <div class="meta-label">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
-            Base URL
-          </div>
+          <div class="meta-label">Base URL</div>
           <div class="meta-value">https://[endpoint-fornecido-pelo-dealer]/aemp/</div>
         </div>
         <div class="meta-item">
-          <div class="meta-label">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            Autenticacao
-          </div>
+          <div class="meta-label">Autenticacao</div>
           <div class="meta-value text">OAuth 2.0 (Client Credentials) — Client ID + Client Secret via dealer</div>
         </div>
         <div class="meta-item">
-          <div class="meta-label">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Frequencias Disponiveis
-          </div>
+          <div class="meta-label">Frequencias Disponiveis</div>
           <div class="meta-value text">10 min | 60 min | 24 horas (configuravel via dealer)</div>
         </div>
         <div class="meta-item">
-          <div class="meta-label">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>
-            Sandbox
-          </div>
-          <div class="meta-value text">Nao disponivel publicamente</div>
+          <div class="meta-label">Custo Estimado</div>
+          <div class="meta-value text">ISO €2–10/maq/ano — Proprietaria €5/maq</div>
         </div>
       </div>
 
-      <div class="endpoint-card" data-tags="loc hrs fuel status">
+      <div class="note-box">
+        <div class="note-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Pendencia: Protocolo e frequencia por definir antes de avancar
+        </div>
+        Volume estimado de 1011 maquinas. Decidir entre ISO-15143-3 ou AEMP 1.2 afeta custo e frequencia de dados. Sandbox nao disponivel publicamente — credenciais exclusivas via dealer autorizado.
+      </div>
+
+      <div class="endpoint-card pending-card" data-tags="loc hrs fuel status">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/Fleet/{pageNumber}</span>
+          <span class="endpoint-path">/Fleet/{'{pageNumber}'}</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="hi-fleet" data-api="hitachi" data-path="/Fleet/{pageNumber}" data-label="Hitachi Fleet Snapshot">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Fleet Snapshot — Visao Geral da Frota Hitachi</div>
         <div class="endpoint-desc">Endpoint principal de Fleet Snapshot. Retorna a ultima posicao conhecida, horas e combustivel de todas as maquinas Hitachi da frota. Paginado a cada 100 registros.</div>
         <div class="endpoint-tags">
-          <span class="etag loc">localizacao</span><span class="etag hrs">horas</span><span class="etag fuel">combustivel</span><span class="etag status">status</span>
+          <span class="etag loc">localizacao</span><span class="etag hrs">horas</span><span class="etag fuel">combustivel</span><span class="etag status">status</span><span class="etag pending-tag">Pendente credenciais</span>
         </div>
       </div>
 
-      <div class="endpoint-card" data-tags="loc">
+      <div class="endpoint-card pending-card" data-tags="loc">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/Fleet/Equipment/{vin}/Locations</span>
+          <span class="endpoint-path">/Fleet/Equipment/{'{vin}'}/Locations</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="hi-locations" data-api="hitachi" data-path="/Fleet/Equipment/{vin}/Locations" data-label="Hitachi Historico Localizacoes">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Historico de Localizacoes</div>
         <div class="endpoint-desc">Serie temporal para historico de localizacoes de uma maquina Hitachi especifica. Permite reconstruir rotas e analisar padroes de deslocamento.</div>
-        <div class="endpoint-tags"><span class="etag loc">localizacao</span></div>
+        <div class="endpoint-tags"><span class="etag loc">localizacao</span><span class="etag pending-tag">Pendente credenciais</span></div>
       </div>
 
-      <div class="endpoint-card" data-tags="hrs">
+      <div class="endpoint-card pending-card" data-tags="hrs">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/Fleet/Equipment/{vin}/CumulativeOperatingHours</span>
+          <span class="endpoint-path">/Fleet/Equipment/{'{vin}'}/CumulativeOperatingHours</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="hi-cumOperatingHours" data-api="hitachi" data-path="/Fleet/Equipment/{vin}/CumulativeOperatingHours" data-label="Hitachi Horas Operacao Cumulativas">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Horas de Operacao Cumulativas</div>
         <div class="endpoint-desc">Retorna o historico de horas de operacao cumulativas de uma maquina Hitachi. Dado vital para controle de depreciacao, manutencao preventiva e faturamento de locacao.</div>
-        <div class="endpoint-tags"><span class="etag hrs">horas</span></div>
+        <div class="endpoint-tags"><span class="etag hrs">horas</span><span class="etag pending-tag">Pendente credenciais</span></div>
       </div>
 
-      <div class="endpoint-card" data-tags="fuel">
+      <div class="endpoint-card pending-card" data-tags="fuel">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/Fleet/Equipment/{vin}/CumulativeFuelUsed</span>
+          <span class="endpoint-path">/Fleet/Equipment/{'{vin}'}/CumulativeFuelUsed</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="hi-cumFuelUsed" data-api="hitachi" data-path="/Fleet/Equipment/{vin}/CumulativeFuelUsed" data-label="Hitachi Combustivel Cumulativo">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Combustivel Consumido Cumulativo</div>
         <div class="endpoint-desc">Dados de consumo de combustivel ao longo do tempo para uma maquina Hitachi especifica. Permite analises de eficiencia e calculo de custos operacionais.</div>
-        <div class="endpoint-tags"><span class="etag fuel">combustivel</span></div>
+        <div class="endpoint-tags"><span class="etag fuel">combustivel</span><span class="etag pending-tag">Pendente credenciais</span></div>
       </div>
 
-      <div class="endpoint-card" data-tags="hrs fuel">
+      <div class="endpoint-card pending-card" data-tags="hrs fuel">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/Fleet/Equipment/{vin}/CumulativeIdleHours</span>
+          <span class="endpoint-path">/Fleet/Equipment/{'{vin}'}/CumulativeIdleHours</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="hi-cumIdleHours" data-api="hitachi" data-path="/Fleet/Equipment/{vin}/CumulativeIdleHours" data-label="Hitachi Horas Idle">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Horas de Marcha Lenta (Idle Hours)</div>
         <div class="endpoint-desc">Retorna as horas em que a maquina esteve ligada mas ociosa (motor funcionando sem trabalho produtivo). Crucial para identificar desperdicio de combustivel.</div>
-        <div class="endpoint-tags"><span class="etag hrs">horas</span><span class="etag fuel">combustivel</span></div>
+        <div class="endpoint-tags"><span class="etag hrs">horas</span><span class="etag fuel">combustivel</span><span class="etag pending-tag">Pendente credenciais</span></div>
       </div>
 
-      <div class="endpoint-card" data-tags="loc">
+      <div class="endpoint-card pending-card" data-tags="loc">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/Fleet/Equipment/{vin}/DistanceTraveled</span>
+          <span class="endpoint-path">/Fleet/Equipment/{'{vin}'}/DistanceTraveled</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="hi-distanceTraveled" data-api="hitachi" data-path="/Fleet/Equipment/{vin}/DistanceTraveled" data-label="Hitachi Distancia Percorrida">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Distancia Percorrida</div>
         <div class="endpoint-desc">Retorna a distancia acumulada percorrida pela maquina. Dado padrao do AEMP 2.0, util para logistica e calculo de desgaste. Disponibilidade varia por modelo e regiao.</div>
-        <div class="endpoint-tags"><span class="etag loc">localizacao</span></div>
+        <div class="endpoint-tags"><span class="etag loc">localizacao</span><span class="etag pending-tag">Pendente credenciais</span></div>
       </div>
 
-      <div class="endpoint-card" data-tags="alert">
+      <div class="endpoint-card pending-card" data-tags="alert">
         <div class="endpoint-top">
           <span class="method-badge get">GET</span>
-          <span class="endpoint-path">/Fleet/Equipment/{vin}/Faults</span>
+          <span class="endpoint-path">/Fleet/Equipment/{'{vin}'}/Faults</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="hi-faults" data-api="hitachi" data-path="/Fleet/Equipment/{vin}/Faults" data-label="Hitachi Codigos de Falha DTC">
+            <span class="check-label">incluir</span>
+          </div>
         </div>
         <div class="endpoint-name">Codigos de Falha (DTC)</div>
         <div class="endpoint-desc">Retorna os codigos de falha ativos e historicos de uma maquina Hitachi para diagnostico remoto. Extensao do padrao AEMP 2.0 com dados de saude da maquina.</div>
-        <div class="endpoint-tags"><span class="etag alert">alertas</span></div>
+        <div class="endpoint-tags"><span class="etag alert">alertas</span><span class="etag pending-tag">Pendente credenciais</span></div>
+      </div>
+
+      <div class="endpoint-card pending-card" data-tags="loc hrs fuel status">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/Fleet/Equipment/{'{vin}'}</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="hi-equipment-vin" data-api="hitachi" data-path="/Fleet/Equipment/{vin}" data-label="Hitachi Dados AEMP por VIN">
+            <span class="check-label">incluir</span>
+          </div>
+        </div>
+        <div class="endpoint-name">Dados AEMP de Equipamento Especifico</div>
+        <div class="endpoint-desc">Retorna os dados telematicos padronizados de um equipamento Hitachi especifico usando seu VIN. Formato de resposta em XML (padrao) ou JSON.</div>
+        <div class="endpoint-tags">
+          <span class="etag loc">localizacao</span><span class="etag hrs">horas</span><span class="etag fuel">combustivel</span><span class="etag status">status</span><span class="etag pending-tag">Pendente credenciais</span>
+        </div>
       </div>
 
       <div class="note-box">
@@ -1047,9 +1351,206 @@ body{
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
           P-API (Proprietaria) — Dados Estendidos
         </div>
-        A Hitachi oferece uma API proprietaria (P-API) que, alem dos dados AEMP/ISO, fornece informacoes adicionais como: temperatura do oleo hidraulico, emissoes de CO2, horas de escavacao e giro, e payload em carregadeiras ZW-7. O acesso e exclusivo via dealer e nao possui documentacao publica. Deve ser considerada caso o projeto necessite de dados alem do padrao AEMP.
+        A Hitachi oferece uma API proprietaria (P-API) que, alem dos dados AEMP/ISO, fornece informacoes adicionais como: temperatura do oleo hidraulico, emissoes de CO2, horas de escavacao e giro, e payload em carregadeiras ZW-7. O acesso e exclusivo via dealer e nao possui documentacao publica.
       </div>
     </section>
+
+    <!-- ========================================= -->
+    <!-- DOPPSTADT / PROEMION                      -->
+    <!-- ========================================= -->
+    <section class="api-section" id="doppstadt">
+      <div class="section-header">
+        <div>
+          <div class="section-tag">OAuth2 Client Credentials</div>
+          <h3 class="section-title">Doppstadt — Proemion DataPortal</h3>
+          <div class="section-subtitle">Sinais de sensor e manutencao — 145 campos catalogados</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="status-badge ok"><span class="status-dot ok"></span>Autenticado</span>
+          <div class="section-count">10 endpoints</div>
+        </div>
+      </div>
+
+      <div class="meta-row">
+        <div class="meta-item">
+          <div class="meta-label">Base URL</div>
+          <div class="meta-value">https://dataportal.proemion.com/api/v25.7.0</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Autenticacao</div>
+          <div class="meta-value text">OAuth2 Client Credentials</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Rotas OK</div>
+          <div class="meta-value text" style="color:var(--accent-green)">4 / 10 funcionando</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Modelos</div>
+          <div class="meta-value text">SM518-620-720.2 E, DW3068 StageV, AK315, DW2268</div>
+        </div>
+      </div>
+
+      <!-- GET /me -->
+      <div class="endpoint-card" data-tags="status">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/me</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="dp-me" data-api="doppstadt" data-path="/me" data-label="Doppstadt Perfil Usuario">
+            <span class="check-label">incluir</span>
+          </div>
+        </div>
+        <div class="endpoint-name">Perfil e Permissoes do Usuario</div>
+        <div class="endpoint-desc">Retorna dados do cliente autenticado, organizacao e permissoes disponiveiss. Campos: client.id, name, banned, organization{'{id,name,type}'}, permissions{'{organization,report,task,location,aemp,realtime}'}.</div>
+        <div class="endpoint-tags"><span class="etag status">status</span><span class="etag ok" style="background:rgba(76,175,80,.15);color:var(--accent-green);border-color:rgba(76,175,80,.3);font-size:.6rem;font-family:var(--font-mono);padding:2px 8px;border-radius:3px;border:1px solid">200 OK</span></div>
+      </div>
+
+      <!-- GET /models -->
+      <div class="endpoint-card" data-tags="status">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/models</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="dp-models" data-api="doppstadt" data-path="/models" data-label="Doppstadt Modelos de Equipamentos">
+            <span class="check-label">incluir</span>
+          </div>
+        </div>
+        <div class="endpoint-name">Modelos de Equipamentos</div>
+        <div class="endpoint-desc">Retorna os 4 modelos de maquinas Doppstadt disponiveis: SM518-620-720.2 E, DW3068 StageV, AK315, DW2268. Ponto de partida para filtrar sinais e tarefas por modelo.</div>
+        <div class="endpoint-tags"><span class="etag status">status</span><span class="etag ok" style="background:rgba(76,175,80,.15);color:var(--accent-green);border-color:rgba(76,175,80,.3);font-size:.6rem;font-family:var(--font-mono);padding:2px 8px;border-radius:3px;border:1px solid">200 OK — 4 modelos</span></div>
+      </div>
+
+      <!-- GET /signals -->
+      <div class="endpoint-card" data-tags="status fuel hrs alert">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/signals</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="dp-signals" data-api="doppstadt" data-path="/signals" data-label="Doppstadt Catalogo de Sinais 145">
+            <span class="check-label">incluir</span>
+          </div>
+        </div>
+        <div class="endpoint-name">Catalogo de Sinais (145 campos)</div>
+        <div class="endpoint-desc">Retorna os 145 sinais telemetricos catalogados. Grupos: Modem/CU, Engine, Machine, Hydraulics, Pressures, Warnings (~40 flags), DTC, Telematics Control, PLC/SPS, Weather, E-Engine. Campos por sinal: key, label, type, format, unit, logicalType, minValue, maxValue, boundTo.</div>
+        <div class="endpoint-tags"><span class="etag fuel">combustivel</span><span class="etag hrs">horas</span><span class="etag alert">alertas</span><span class="etag status">status</span><span class="etag ok" style="background:rgba(76,175,80,.15);color:var(--accent-green);border-color:rgba(76,175,80,.3);font-size:.6rem;font-family:var(--font-mono);padding:2px 8px;border-radius:3px;border:1px solid">200 OK — 145 sinais</span></div>
+      </div>
+
+      <!-- GET /maintenanceTasks -->
+      <div class="endpoint-card" data-tags="maint">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/maintenanceTasks</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="dp-maintenanceTasks" data-api="doppstadt" data-path="/maintenanceTasks" data-label="Doppstadt Tarefas de Manutencao">
+            <span class="check-label">incluir</span>
+          </div>
+        </div>
+        <div class="endpoint-name">Tarefas de Manutencao (20 tarefas)</div>
+        <div class="endpoint-desc">Retorna o plano de manutencao com 20 tarefas configuradas. Intervalos: 50h, 250h, 500h, 750h, 1000h, 1250h, 1500h, 1750h, 2000h — 9 patamares de revisao preventiva.</div>
+        <div class="endpoint-tags"><span class="etag maint">manutencao</span><span class="etag ok" style="background:rgba(76,175,80,.15);color:var(--accent-green);border-color:rgba(76,175,80,.3);font-size:.6rem;font-family:var(--font-mono);padding:2px 8px;border-radius:3px;border:1px solid">200 OK — 20 tarefas</span></div>
+      </div>
+
+      <!-- Sinais detalhados -->
+      <div class="note-box info">
+        <div class="note-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Campos Disponiveis via /signals — Sinais Mapeados
+        </div>
+        <strong style="color:var(--text-primary)">Operacao:</strong> engine.hours.total, machine.hours.operation.total, machine.hours.idle.total, machine.hours.fullload, machine.hours.partload, engine.speed (RPM), machine.drum.speed<br>
+        <strong style="color:var(--text-primary)">Saude:</strong> engine.fuel.level, fuel.efficiency.current, fuel.used.total, engine.def.level/temperature (AdBlue), engine.coolant.temperature, engine.oil.pressure/level, hydraulics.oil.level/temperature, particlefilter.pressure.differential/temperature<br>
+        <strong style="color:var(--text-primary)">Telemetria:</strong> cu.sensors.ignition.state, machine.battery.voltage, cu.sensors.supply.voltage, cu.signal.connectiontype (2G/3G/4G), cu.status.antenna.gps/mobile<br>
+        <strong style="color:var(--text-primary)">Manutencao:</strong> ~40 flags warnings bitfield, DTC.SA00, DTC.SA01, DTC.SA3D
+      </div>
+    </section>
+
+    <!-- ========================================= -->
+    <!-- MANITOU / TRACKUNIT                       -->
+    <!-- ========================================= -->
+    <section class="api-section" id="trackunit">
+      <div class="section-header">
+        <div>
+          <div class="section-tag">OAuth2 Password Grant (ROPC)</div>
+          <h3 class="section-title">Manitou / Gehl — Trackunit IRIS API</h3>
+          <div class="section-subtitle">100 assets Gehl — Conexao OK, modulos adicionais pendentes</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="status-badge ok"><span class="status-dot ok"></span>Autenticado</span>
+          <div class="section-count">9 endpoints</div>
+        </div>
+      </div>
+
+      <div class="meta-row">
+        <div class="meta-item">
+          <div class="meta-label">Base URL</div>
+          <div class="meta-value">https://iris.trackunit.com/api</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Autenticacao</div>
+          <div class="meta-value text">OAuth2 Password Grant (ROPC)</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Rotas OK</div>
+          <div class="meta-value text" style="color:var(--accent-green)">2 / 9 funcionando</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Assets</div>
+          <div class="meta-value text">100 assets ativos (marca: Gehl)</div>
+        </div>
+      </div>
+
+      <!-- GET /asset/v1/assets -->
+      <div class="endpoint-card" data-tags="status loc">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/asset/v1/assets</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="tu-assets" data-api="trackunit" data-path="/asset/v1/assets" data-label="Trackunit Lista de Assets">
+            <span class="check-label">incluir</span>
+          </div>
+        </div>
+        <div class="endpoint-name">Lista de Assets (100 ativos Gehl)</div>
+        <div class="endpoint-desc">Retorna 100 assets cadastrados (marca Gehl). Resposta paginada com chave 'content'. Campos: id, assetType, type, name, externalReference, model, brand, serialNumber, productionYear, ownerAccountId, createdAt, permissions{'{edit}'}, telematicsDevices{'{id,serialNumber}'}.</div>
+        <div class="endpoint-tags"><span class="etag status">status</span><span class="etag loc">localizacao</span><span class="etag ok" style="background:rgba(76,175,80,.15);color:var(--accent-green);border-color:rgba(76,175,80,.3);font-size:.6rem;font-family:var(--font-mono);padding:2px 8px;border-radius:3px;border:1px solid">200 OK — 100 assets</span></div>
+      </div>
+
+      <!-- GET /customer/v1/customers -->
+      <div class="endpoint-card" data-tags="status">
+        <div class="endpoint-top">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/customer/v1/customers</span>
+          <div class="endpoint-checkbox-wrap">
+            <input type="checkbox" class="endpoint-checkbox" data-id="tu-customers" data-api="trackunit" data-path="/customer/v1/customers" data-label="Trackunit Clientes">
+            <span class="check-label">incluir</span>
+          </div>
+        </div>
+        <div class="endpoint-name">Clientes</div>
+        <div class="endpoint-desc">Retorna 1 cliente cadastrado. Campos: id, name, type, externalReference, source, parentId, email, phone, fax, note, address{'{country,city,zipCode,streetAddress}'}.</div>
+        <div class="endpoint-tags"><span class="etag status">status</span><span class="etag ok" style="background:rgba(76,175,80,.15);color:var(--accent-green);border-color:rgba(76,175,80,.3);font-size:.6rem;font-family:var(--font-mono);padding:2px 8px;border-radius:3px;border:1px solid">200 OK — 1 cliente</span></div>
+      </div>
+      
+    </section>
+
+    <!-- ========================================= -->
+    <!-- SUBMIT AREA — after last endpoint section -->
+    <!-- ========================================= -->
+    <div class="submit-area-inline" id="submitArea">
+      <div class="submit-summary">
+        <span id="selectedCount" class="submit-count">0</span>
+        <span>rotas selecionadas</span>
+        <button class="select-all-btn" id="selectAllBtn" onclick="toggleSelectAll()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Selecionar tudo
+        </button>
+        <button class="select-all-btn" onclick="clearAll()" style="margin-left:0">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Limpar
+        </button>
+      </div>
+      <button class="submit-btn" id="submitBtn" onclick="submitSelection()" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Enviar
+      </button>
+    </div>
 
     <!-- ========================================= -->
     <!-- COVERAGE                                  -->
@@ -1058,69 +1559,85 @@ body{
       <div class="section-header">
         <div>
           <h3 class="section-title">Cobertura de Dados por Fabricante</h3>
-          <div class="section-subtitle">Comparativo de disponibilidade de dados entre as APIs John Deere/Wirtgen e Hitachi</div>
+          <div class="section-subtitle">Comparativo de disponibilidade de dados entre as 4 APIs</div>
+        </div>
+      </div>
+
+      <div class="coverage-grid" style="grid-template-columns:1fr">
+        <div class="coverage-row" style="grid-template-columns:1fr 100px 100px 100px 100px; border-bottom:1px solid var(--border-subtle)">
+          <div class="cov-cell coverage-row header" style="background:var(--bg-card);font-weight:600;color:var(--text-primary);font-size:.75rem;letter-spacing:.04em;text-transform:uppercase">Categoria de Dados</div>
+          <div class="cov-cell coverage-row header" style="background:var(--bg-card);font-weight:600;color:var(--accent-green);font-size:.72rem;letter-spacing:.04em;justify-content:center;border-left:1px solid var(--border-subtle)">John Deere</div>
+          <div class="cov-cell coverage-row header" style="background:var(--bg-card);font-weight:600;color:var(--accent-orange);font-size:.72rem;letter-spacing:.04em;justify-content:center;border-left:1px solid var(--border-subtle)">Hitachi</div>
+          <div class="cov-cell coverage-row header" style="background:var(--bg-card);font-weight:600;color:var(--accent-purple);font-size:.72rem;letter-spacing:.04em;justify-content:center;border-left:1px solid var(--border-subtle)">Doppstadt</div>
+          <div class="cov-cell coverage-row header" style="background:var(--bg-card);font-weight:600;color:var(--accent-teal);font-size:.72rem;letter-spacing:.04em;justify-content:center;border-left:1px solid var(--border-subtle)">Trackunit</div>
         </div>
       </div>
 
       <div class="coverage-grid">
-        <div class="coverage-row header">
-          <div class="cov-cell">Categoria de Dados</div>
-          <div class="cov-cell">John Deere</div>
-          <div class="cov-cell">Hitachi</div>
-        </div>
-        <div class="coverage-row">
+        <div class="coverage-row" style="grid-template-columns:1fr 100px 100px 100px 100px">
           <div class="cov-cell">Localizacao GPS</div>
           <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
           <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill mid" style="width:60%"></div></div><span class="cov-pct">60%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill mid" style="width:50%"></div></div><span class="cov-pct">50%*</span></div>
         </div>
-        <div class="coverage-row">
+        <div class="coverage-row" style="grid-template-columns:1fr 100px 100px 100px 100px">
           <div class="cov-cell">Horas de Operacao</div>
           <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
           <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill low" style="width:30%"></div></div><span class="cov-pct">30%*</span></div>
         </div>
-        <div class="coverage-row">
+        <div class="coverage-row" style="grid-template-columns:1fr 100px 100px 100px 100px">
           <div class="cov-cell">Consumo de Combustivel</div>
           <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill mid" style="width:80%"></div></div><span class="cov-pct">80%</span></div>
           <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill low" style="width:30%"></div></div><span class="cov-pct">30%*</span></div>
         </div>
-        <div class="coverage-row">
+        <div class="coverage-row" style="grid-template-columns:1fr 100px 100px 100px 100px">
           <div class="cov-cell">Horas de Marcha Lenta</div>
           <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:90%"></div></div><span class="cov-pct">90%</span></div>
           <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill low" style="width:30%"></div></div><span class="cov-pct">30%*</span></div>
         </div>
-        <div class="coverage-row">
-          <div class="cov-cell">Distancia Percorrida</div>
-          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:90%"></div></div><span class="cov-pct">90%</span></div>
-          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill mid" style="width:70%"></div></div><span class="cov-pct">70%</span></div>
-        </div>
-        <div class="coverage-row">
+        <div class="coverage-row" style="grid-template-columns:1fr 100px 100px 100px 100px">
           <div class="cov-cell">Codigos de Falha (DTC)</div>
           <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
           <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill mid" style="width:80%"></div></div><span class="cov-pct">80%</span></div>
-        </div>
-        <div class="coverage-row">
-          <div class="cov-cell">Notificacoes em Tempo Real</div>
           <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
-          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill low" style="width:40%"></div></div><span class="cov-pct">40%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill low" style="width:20%"></div></div><span class="cov-pct">—*</span></div>
         </div>
-        <div class="coverage-row">
-          <div class="cov-cell">Dados de Operacao (WPT)</div>
-          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
-          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill low" style="width:40%"></div></div><span class="cov-pct">40%</span></div>
-        </div>
-        <div class="coverage-row">
-          <div class="cov-cell">Alertas de Geofence</div>
+        <div class="coverage-row" style="grid-template-columns:1fr 100px 100px 100px 100px">
+          <div class="cov-cell">Manutencao Preventiva</div>
           <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill mid" style="width:70%"></div></div><span class="cov-pct">70%</span></div>
           <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill low" style="width:40%"></div></div><span class="cov-pct">40%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill low" style="width:20%"></div></div><span class="cov-pct">—*</span></div>
+        </div>
+        <div class="coverage-row" style="grid-template-columns:1fr 100px 100px 100px 100px">
+          <div class="cov-cell">Sensores Hidraulica/Temp</div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill low" style="width:30%"></div></div><span class="cov-pct">30%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill low" style="width:40%"></div></div><span class="cov-pct">40%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill low" style="width:20%"></div></div><span class="cov-pct">—*</span></div>
+        </div>
+        <div class="coverage-row" style="grid-template-columns:1fr 100px 100px 100px 100px">
+          <div class="cov-cell">Identificacao Equipamento</div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+          <div class="cov-cell"><div class="cov-bar"><div class="cov-bar-fill high" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
         </div>
       </div>
 
       <div class="note-box">
         <div class="note-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-          Geofences — Correcao Importante
+          * Trackunit — dados condicionados a ativacao de modulos
         </div>
-        A JD nao possui um endpoint publico dedicado para criacao/edicao de geofences via API. Os alertas de geofence sao um tipo de alerta retornado pela Machine Alerts API quando configurados no Operations Center UI. A coluna reflete apenas leitura de alertas de geofence, nao gestao completa.
+        Os valores Trackunit marcados com * estao bloqueados por 403 Forbidden. A cobertura real sera significativamente maior apos ativacao dos modulos telematics-data (prioritario), machines, fleets e sites junto a Trackunit. Identificacao de equipamento (assets + customers) e o unico dado 100% confirmado.
       </div>
 
       <!-- TECH COMPARISON -->
@@ -1159,7 +1676,7 @@ body{
         <div class="tech-row">
           <div class="tech-cell">Sandbox</div>
           <div class="tech-cell"><span class="mono">sandboxapi.deere.com</span></div>
-          <div class="tech-cell"><span class="val">Nao disponivel publicamente</span></div>
+          <div class="tech-cell"><span class="no">Nao disponivel publicamente</span></div>
         </div>
         <div class="tech-row">
           <div class="tech-cell">Webhooks</div>
@@ -1177,6 +1694,45 @@ body{
           <div class="tech-cell"><span class="val">XML (padrao) / JSON</span></div>
         </div>
       </div>
+
+      <h3 class="section-title" style="margin:32px 0 16px">Doppstadt vs Trackunit</h3>
+      <div class="tech-table">
+        <div class="tech-row header">
+          <div class="tech-cell">Parametro</div>
+          <div class="tech-cell">Doppstadt / Proemion</div>
+          <div class="tech-cell">Manitou / Trackunit IRIS</div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-cell">Autenticacao</div>
+          <div class="tech-cell"><span class="val">OAuth2 Client Credentials</span></div>
+          <div class="tech-cell"><span class="val">OAuth2 Password Grant (ROPC)</span></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-cell">Base URL</div>
+          <div class="tech-cell"><span class="mono">dataportal.proemion.com</span></div>
+          <div class="tech-cell"><span class="mono">iris.trackunit.com/api</span></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-cell">Status</div>
+          <div class="tech-cell"><span class="yes">4/10 OK</span></div>
+          <div class="tech-cell"><span class="partial">2/9 OK (7 bloqueados)</span></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-cell">Sinais</div>
+          <div class="tech-cell"><span class="yes">145 sinais catalogados</span></div>
+          <div class="tech-cell"><span class="no">Telematics 403 — pendente</span></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-cell">Manutencao</div>
+          <div class="tech-cell"><span class="yes">20 tarefas / 9 intervalos</span></div>
+          <div class="tech-cell"><span class="no">Nao disponivel ainda</span></div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-cell">Blockers</div>
+          <div class="tech-cell"><span class="partial">Solicitar /cus e /organizations ao fornecedor</span></div>
+          <div class="tech-cell"><span class="no">Ativar modulos Trackunit (contrato)</span></div>
+        </div>
+      </div>
     </section>
 
     <!-- ========================================= -->
@@ -1192,51 +1748,57 @@ body{
 
       <div class="usecase-card">
         <h4>Dashboard Unificado de Frota</h4>
-        <p>Usar os endpoints Fleet Snapshot (AEMP 2.0) de ambas as fabricantes para exibir todas as maquinas em um unico mapa interativo, independente da marca.</p>
+        <p>Usar os endpoints Fleet Snapshot (AEMP 2.0) de ambas as fabricantes JD/Hitachi + assets Trackunit para exibir todas as maquinas em um unico mapa interativo, independente da marca.</p>
         <div class="usecase-endpoints">
-          <span class="ue-tag">JD AEMP /Fleet/{page}</span>
-          <span class="ue-tag hi">Hitachi /Fleet/{page}</span>
+          <span class="ue-tag">JD AEMP /Fleet/{'{page}'}</span>
+          <span class="ue-tag hi">Hitachi /Fleet/{'{page}'}</span>
+          <span class="ue-tag tu">Trackunit /asset/v1/assets</span>
         </div>
       </div>
 
       <div class="usecase-card">
         <h4>Gestao de Eficiencia de Combustivel</h4>
-        <p>Cruzar CumulativeFuelUsed com CumulativeIdleHours para identificar maquinas com alto indice de ociosidade e gerar relatorios de economia.</p>
+        <p>Cruzar CumulativeFuelUsed com CumulativeIdleHours para identificar maquinas com alto indice de ociosidade. Doppstadt oferece os dados mais granulares (fuel.efficiency.current, fuel.used.total).</p>
         <div class="usecase-endpoints">
           <span class="ue-tag hi">Hitachi /CumulativeFuelUsed</span>
           <span class="ue-tag hi">Hitachi /CumulativeIdleHours</span>
           <span class="ue-tag">JD /machineDeviceStateReports</span>
+          <span class="ue-tag dp">Proemion /signals fuel.*</span>
         </div>
       </div>
 
       <div class="usecase-card">
         <h4>Manutencao Preditiva</h4>
-        <p>Monitorar machineAlerts e Faults para notificar mecanicos imediatamente quando um codigo de erro grave (DTC) for emitido por qualquer maquina da frota.</p>
+        <p>Monitorar DTC e Warnings para notificar mecanicos imediatamente. Doppstadt e o mais completo com 145 sinais e plano estruturado de 20 tarefas por horas de uso.</p>
         <div class="usecase-endpoints">
           <span class="ue-tag">JD /machineAlerts</span>
           <span class="ue-tag hi">Hitachi /Faults</span>
+          <span class="ue-tag dp">Proemion /maintenanceTasks</span>
+          <span class="ue-tag dp">Proemion /signals DTC.*</span>
           <span class="ue-tag">JD POST /webhooks</span>
         </div>
       </div>
 
       <div class="usecase-card">
         <h4>Controle de Horas e Faturamento</h4>
-        <p>Usar CumulativeOperatingHours para automatizar o faturamento de maquinas alugadas e agendar revisoes preventivas com base em horas reais de uso.</p>
+        <p>Usar CumulativeOperatingHours e horas de motor para automatizar faturamento de maquinas alugadas e agendar revisoes preventivas baseadas em uso real.</p>
         <div class="usecase-endpoints">
           <span class="ue-tag">JD /machineEngineHours</span>
           <span class="ue-tag">JD /machineHoursOfOperation</span>
           <span class="ue-tag hi">Hitachi /CumulativeOperatingHours</span>
+          <span class="ue-tag dp">Proemion engine.hours.total</span>
         </div>
       </div>
 
       <div class="usecase-card">
         <h4>Rastreamento e Logistica</h4>
-        <p>Combinar dados de localizacao e distancia percorrida para otimizar rotas, calcular tempo de deslocamento entre obras e controlar quilometragem.</p>
+        <p>Combinar dados de localizacao e distancia percorrida para otimizar rotas e calcular tempo de deslocamento entre obras.</p>
         <div class="usecase-endpoints">
           <span class="ue-tag">JD /machineLocations</span>
           <span class="ue-tag">JD /machineDistanceTraveled</span>
           <span class="ue-tag hi">Hitachi /Locations</span>
           <span class="ue-tag hi">Hitachi /DistanceTraveled</span>
+          <span class="ue-tag tu">Trackunit /site/v2/sites*</span>
         </div>
       </div>
     </section>
@@ -1271,8 +1833,10 @@ body{
         <div class="ref-item"><span class="ref-num">16</span><span class="ref-text">AutoPi — AEMP 2.0 Explained: Mixed-Fleet Telematics Standard</span></div>
         <div class="ref-item"><span class="ref-num">17</span><span class="ref-text">Caterpillar Digital — ISO 15143-3 (AEMP 2.0) API Developer Guide</span></div>
         <div class="ref-item"><span class="ref-num">18</span><span class="ref-text">Geoforce — AEMP/ISO 15143-3 Mixed-Fleet Data Ingestion</span></div>
-        <div class="ref-item"><span class="ref-num">19</span><span class="ref-text">Esri — Connecting to John Deere JDLink Machine Data API (PDF)</span></div>
-        <div class="ref-item"><span class="ref-num">20</span><span class="ref-text">GitHub — deere-sdk: Unofficial TypeScript SDK for John Deere API</span></div>
+        <div class="ref-item"><span class="ref-num">19</span><span class="ref-text">Proemion DataPortal — API Documentation v25.7.0</span></div>
+        <div class="ref-item"><span class="ref-num">20</span><span class="ref-text">Trackunit IRIS — API Reference (assets, machines, telematics)</span></div>
+        <div class="ref-item"><span class="ref-num">21</span><span class="ref-text">Esri — Connecting to John Deere JDLink Machine Data API (PDF)</span></div>
+        <div class="ref-item"><span class="ref-num">22</span><span class="ref-text">GitHub — deere-sdk: Unofficial TypeScript SDK for John Deere API</span></div>
       </div>
     </section>
 
@@ -1283,13 +1847,106 @@ body{
     <span class="footer-tag">ISO 15143-3</span>
     <span class="footer-tag">AEMP 2.0</span>
     <span class="footer-tag">OAuth 2.0</span>
-    <span class="footer-text">Mapeamento baseado em documentacao oficial — John Deere, Wirtgen Group e Hitachi Construction Machinery</span>
+    <span class="footer-tag">Proemion v25.7.0</span>
+    <span class="footer-tag">Trackunit IRIS</span>
+    <span class="footer-text">Mapeamento baseado em documentacao oficial — John Deere, Wirtgen, Hitachi, Proemion e Trackunit</span>
   </footer>
 
 </div>
 
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
 <script>
-// Sidebar navigation active state
+const WEBHOOK_URL = 'https://jorge-n8n.rijyaf.easypanel.host/webhook/bf1745e6-29aa-4bc1-b23c-864a71af0048';
+
+// ---- CHECKBOX LOGIC ----
+function updateCount() {
+  const checked = document.querySelectorAll('.endpoint-checkbox:checked');
+  const count = checked.length;
+  document.getElementById('selectedCount').textContent = count;
+  document.getElementById('submitBtn').disabled = count === 0;
+  
+  // Update card highlight
+  document.querySelectorAll('.endpoint-checkbox').forEach(cb => {
+    const card = cb.closest('.endpoint-card');
+    if (card) card.classList.toggle('selected', cb.checked);
+  });
+}
+
+document.querySelectorAll('.endpoint-checkbox').forEach(cb => {
+  cb.addEventListener('change', updateCount);
+});
+
+let allSelected = false;
+function toggleSelectAll() {
+  allSelected = !allSelected;
+  document.querySelectorAll('.endpoint-checkbox').forEach(cb => { cb.checked = allSelected; });
+  document.getElementById('selectAllBtn').innerHTML = allSelected
+    ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Desmarcar tudo`
+    : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Selecionar tudo`;
+  updateCount();
+}
+
+function clearAll() {
+  allSelected = false;
+  document.querySelectorAll('.endpoint-checkbox').forEach(cb => { cb.checked = false; });
+  document.getElementById('selectAllBtn').innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Selecionar tudo`;
+  updateCount();
+}
+
+// ---- SUBMIT ----
+async function submitSelection() {
+  const checked = document.querySelectorAll('.endpoint-checkbox:checked');
+  if (checked.length === 0) return;
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Enviando...`;
+
+  const endpoints = Array.from(checked).map(cb => ({
+    id: cb.dataset.id,
+    api: cb.dataset.api,
+    path: cb.dataset.path,
+    label: cb.dataset.label
+  }));
+
+  const payload = {
+    timestamp: new Date().toISOString(),
+    source: 'api_mapping_v2025_03',
+    total_selected: endpoints.length,
+    endpoints: endpoints
+  };
+
+  try {
+    const res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      showToast('success', `✓ ${endpoints.length} rota(s) enviadas com sucesso`);
+    } else {
+      showToast('error-toast', `Erro ${res.status} — verifique o webhook`);
+    }
+  } catch (e) {
+    showToast('error-toast', `Erro de rede: ${e.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Enviar para Webhook`;
+    updateCount();
+  }
+}
+
+function showToast(type, msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => { t.classList.remove('show'); }, 3500);
+}
+
+// ---- SIDEBAR NAV ----
 document.querySelectorAll('.sidebar-section:first-of-type .nav-item').forEach(item => {
   item.addEventListener('click', function() {
     document.querySelectorAll('.sidebar-section:first-of-type .nav-item').forEach(n => n.classList.remove('active'));
@@ -1303,27 +1960,19 @@ filterItems.forEach(item => {
   item.addEventListener('click', function(e) {
     e.preventDefault();
     const filter = this.dataset.filter;
-    
-    // Update active state
     filterItems.forEach(f => f.classList.remove('active'));
     this.classList.add('active');
-    
-    // Filter endpoint cards
     document.querySelectorAll('.endpoint-card').forEach(card => {
-      if (filter === 'all') {
-        card.style.display = '';
-        return;
-      }
+      if (filter === 'all') { card.style.display = ''; return; }
       const tags = card.dataset.tags || '';
       card.style.display = tags.includes(filter) ? '' : 'none';
     });
   });
 });
 
-// Scroll spy for navigation
+// Scroll spy
 const sections = document.querySelectorAll('.api-section, .coverage-section');
 const navItems = document.querySelectorAll('.sidebar-section:first-of-type .nav-item');
-
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -1334,7 +1983,6 @@ const observer = new IntersectionObserver((entries) => {
     }
   });
 }, { threshold: 0.2, rootMargin: '-80px 0px -60% 0px' });
-
 sections.forEach(s => observer.observe(s));
 
 // Copy endpoint path
